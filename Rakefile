@@ -8,7 +8,7 @@ NAME = "api_cache"
 GEM_VERSION = "0.0.1"
 AUTHOR = "Martyn Loughran"
 EMAIL = "me@mloughran.com"
-HOMEPAGE = "http://merb-plugins.rubyforge.org/api_cache/"
+HOMEPAGE = "http://github.com/mloughran/api_cache/"
 SUMMARY = "Library to handle caching external API calls"
 
 spec = Gem::Specification.new do |s|
