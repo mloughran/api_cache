@@ -5,7 +5,7 @@ require 'date'
 
 PLUGIN = "api_cache"
 NAME = "api_cache"
-GEM_VERSION = "0.0.1"
+GEM_VERSION = "0.0.2"
 AUTHOR = "Martyn Loughran"
 EMAIL = "me@mloughran.com"
 HOMEPAGE = "http://github.com/mloughran/api_cache/"
