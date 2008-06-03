@@ -1,8 +1,8 @@
 # Cache performs calculations relating to the status of items stored in the
 # cache and delegates storage to the various cache stores.
 class APICache::Cache
-  def initialize
-    @store = APICache::MemoryStore.new
+  def initialize(store)
+    @store = store.send(:new)
   end
   
   # Returns one of the following options depending on the state of the key:

@@ -9,8 +9,8 @@ class APICache
   end
   
   # Initializes the cache
-  def self.start
-    APICache.cache  = APICache::Cache.new
+  def self.start(store = APICache::MemcacheStore)
+    APICache.cache  = APICache::Cache.new(store)
     APICache.api    = APICache::API.new
   end
   
@@ -66,3 +66,4 @@ require 'api_cache/cache'
 require 'api_cache/api'
 require 'api_cache/abstract_store'
 require 'api_cache/memory_store'
+require 'api_cache/memcache_store'
