@@ -64,4 +64,5 @@ end
 
 require 'api_cache/cache'
 require 'api_cache/api'
+require 'api_cache/abstract_store'
 require 'api_cache/memory_store'

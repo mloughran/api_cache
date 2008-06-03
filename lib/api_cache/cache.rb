@@ -31,5 +31,6 @@ class APICache::Cache
   
   def set(key, value)
     @store.set(key, value)
+    true
   end
 end

@@ -1,17 +1,14 @@
-class APICache::MemoryStore
+class APICache::MemoryStore < APICache::AbstractStore
   def initialize
     puts "Init cache"
     @cache = {}
-  end
-
-  def expired?(key, timeout)
-    Time.now - created(key) > timeout
+    true
   end
 
   def set(key, value)
     puts "Setting the cache"
     @cache[key] = [Time.now, value]
-    value
+    true
   end
 
   def get(key)
@@ -21,6 +18,10 @@ class APICache::MemoryStore
 
   def exists?(key)
     !@cache[key].nil?
+  end
+  
+  def expired?(key, timeout)
+    Time.now - created(key) > timeout
   end
 
   private
