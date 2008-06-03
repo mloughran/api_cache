@@ -4,28 +4,28 @@ class APICache::MemoryStore
     @cache = {}
   end
 
-  def expired?(name, timeout)
-    Time.now - created(name) > timeout
+  def expired?(key, timeout)
+    Time.now - created(key) > timeout
   end
 
-  def set(name, value)
+  def set(key, value)
     puts "Setting the cache"
-    @cache[name] = [Time.now, value]
+    @cache[key] = [Time.now, value]
     value
   end
 
-  def get(name)
+  def get(key)
     puts "Serving from cache"
-    @cache[name][1]
+    @cache[key][1]
   end
 
-  def exists?(name)
-    !@cache[name].nil?
+  def exists?(key)
+    !@cache[key].nil?
   end
 
   private
 
-  def created(name)
-    @cache[name][0]
+  def created(key)
+    @cache[key][0]
   end
 end
