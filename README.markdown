@@ -10,7 +10,7 @@ You get the following functionality for free:
 * If the twitter API dies then keep using the last data received for a day. Then assume it's invalid and announce that Twitter has FAILED (optional).
 * Don't hit the rate limit (70 requests per 60 minutes)
 
-So what exactly does `APICache` do? Given cached data younger than 10 minutes old, it return that. Otherwise, assuming we didn't try to request the URL within the last minute (to avoid the rate limit), makes a get request to the Twitter API. If it timeouts or doesn't return a 2xx code (very likely) we're still fine: just returns the last data fetched (as long as it's less than a day old). In the exceptional case all is lost and no data can be returned, raise an `APICache::NotAvailableError` exception. You're responsible for catching that and complaining bitterly to the internet.
+So what exactly does `APICache` do? Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the Twitter API. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, it raises an `APICache::NotAvailableError` exception. You're responsible for catching this exception and complaining bitterly to the internet.
 
 All very simple. What if you need to do something more complicated? Say you need authentication or the silly API you're using doesn't follow a nice convention of returning 2xx for success. Then you need a block:
 
@@ -31,16 +31,15 @@ All very simple. What if you need to do something more complicated? Say you need
 
 All the caching is still handled for you. If you supply a block then the first argument to `APICache.get` is assumed to be a unique key rather than a URL. Throwing `APICache::Invalid` signals to `APICache` that the request was not successful.
 
-An options hash that allows you to customize the following. These are the default values (all in seconds):
+You can send any of the following options to `APICache.get(url, options = {}, &block)`. These are the default values (times are all in seconds):
 
     {
       :cache => 600,    # 10 minutes  After this time fetch new data
-      :valid => 86400,  # 1 day       After this time discard old data
+      :valid => 86400,  # 1 day       Maximum time to use old data
+                        #             :forever is a valid option
       :period => 60,    # 1 minute    Maximum frequency to call API
       :timeout => 5     # 5 seconds   API response timeout
     }
-
-The first 3 options correspond to the 3 requirements above. The `:timeout` allows you to specify how long to wait for a response from the API before giving up. Currently no retries occur. This doesn't matter since we will always have some data to display except for the case where we haven't received any data for longer than `:valid`. If you specify `{:valid => :forever}` then the old data will keep getting supplied as long as it is available in the store.
 
 Before using the APICache you need to initialize the caches. In merb, for example, put this in your `init.rb`:
 
@@ -51,3 +50,5 @@ Currently there are two stores available: `MemcacheStore` and `MemoryStore`. `Me
     APICache.start(APICache::MemoryStore)
 
 I suppose you'll want to get your hands on this magic. For now just grab the source from [github](http://github.com/mloughran/api_cache/tree/master) and `rake install`. I'll get a gem sorted soon.
+
+Please send feedback if you think of any other functionality that would be handy.

@@ -33,7 +33,7 @@ class APICache
   def self.get(key, options = {}, &block)
     options = {
       :cache => 600,    # 10 minutes  After this time fetch new data
-      :valid => 86400,  # 1 day       After this time discard old data
+      :valid => 86400,  # 1 day       Maximum time to use old data
                         #             :forever is a valid option
       :period => 60,    # 1 minute    Maximum frequency to call API
       :timeout => 5     # 5 seconds   API response timeout
