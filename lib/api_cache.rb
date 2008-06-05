@@ -1,5 +1,5 @@
 class APICache
-  class Error < RuntimeError; end
+  class NotAvailableError < RuntimeError; end
   class Invalid <  RuntimeError; end
   class CannotFetch < RuntimeError; end
   
