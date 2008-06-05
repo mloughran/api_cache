@@ -41,11 +41,23 @@ class APICache::API
         # This should raise APICache::Invalid if it is not correct
         yield
       else
-        r = Net::HTTP.get_response(URI.parse(key)).body
-        # TODO: Check that it's a 200 response
+        get_via_http(key, timeout)
       end
     end
   rescue Timeout::Error, APICache::Invalid
     raise APICache::CannotFetch
+  end
+  
+private
+  
+  def get_via_http(key, timeout)
+    response = Net::HTTP.get_response(URI.parse(key))
+    case response
+    when Net::HTTPSuccess
+      # 2xx response code
+      response.body
+    else
+      raise APICache::Invalid
+    end
   end
 end
