@@ -15,7 +15,7 @@ class APICache::Cache
     if @store.exists?(key)
       if !@store.expired?(key, refetch_time)
         :current
-      elsif !@store.expired?(key, invalid_time)
+      elsif (invalid_time == :forever) || !@store.expired?(key, invalid_time)
         :refetch
       else
         :invalid

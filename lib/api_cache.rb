@@ -14,7 +14,7 @@ class APICache
     APICache.api    = APICache::API.new
   end
   
-  # Raises an APICache::Error if it can't get a value. You should rescue this
+  # Raises an APICache::NotAvailableError if it can't get a value. You should rescue this
   # if your application code.
   # 
   # Optionally call with a block. The value of the block is then used to 
@@ -32,10 +32,11 @@ class APICache
   #     :cache => 60, :valid => 600
   def self.get(key, options = {}, &block)
     options = {
-      :cache => 600,    # 10 minutes  After this time fetch new value
-      :valid => 86400,  # 1 day       Expire even if not fetched new data
-      :period => 60,    # 1 minute    Don't call API more frequently than this
-      :timeout => 5     # 5 seconds   Timeout to wait for response
+      :cache => 600,    # 10 minutes  After this time fetch new data
+      :valid => 86400,  # 1 day       After this time discard old data
+                        #             :forever is a valid option
+      :period => 60,    # 1 minute    Maximum frequency to call API
+      :timeout => 5     # 5 seconds   API response timeout
     }.merge(options)
     
     cache_state = cache.state(key, options[:cache], options[:valid])
@@ -55,7 +56,7 @@ class APICache
           cache.get(key)
         else
           # TODO: Add logging / notification.
-          raise APICache::Error
+          raise APICache::NotAvailableError
         end
       end
     end
