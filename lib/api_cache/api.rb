@@ -1,3 +1,5 @@
+require 'net/http'
+
 # This class wraps up querying the API and remembers when each API was 
 # last queried in case there is a limit to the number that can be made.
 class APICache::API
