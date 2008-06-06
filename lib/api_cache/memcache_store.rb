@@ -1,3 +1,5 @@
+require 'memcache'
+
 class APICache::MemcacheStore < APICache::AbstractStore
   class NotReady < Exception #:nodoc:
     def initialize
@@ -7,30 +9,31 @@ class APICache::MemcacheStore < APICache::AbstractStore
 
   class NotDefined < Exception #:nodoc:
     def initialize
-      super("Memcache is not defined (require it in init.rb)")
+      super("Memcache is not defined")
     end
   end
   
   def initialize
+    APICache.logger.log "Using memcached store"
     namespace = 'api_cache'
     host = '127.0.0.1:11211'
     @memcache = MemCache.new(host, {:namespace => namespace})
     raise NotReady unless @memcache.active?
     true
-  rescue NameError
-    raise NotDefined
+  # rescue NameError
+  #   raise NotDefined
   end
   
   def set(key, data)
     @memcache.set(key, data)
     @memcache.set("#{key}_created_at", Time.now)
-    Merb.logger.info("cache: set (#{key})")
+    APICache.logger.log("cache: set (#{key})")
     true
   end
   
   def get(key)
     data = @memcache.get(key)
-    Merb.logger.info("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
+    APICache.logger.log("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
     data
   end
   

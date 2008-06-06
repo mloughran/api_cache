@@ -6,10 +6,12 @@ class APICache
   class << self
     attr_accessor :cache
     attr_accessor :api
+    attr_accessor :logger
   end
   
   # Initializes the cache
   def self.start(store = APICache::MemcacheStore)
+    APICache.logger = APICache::Logger.new
     APICache.cache  = APICache::Cache.new(store)
     APICache.api    = APICache::API.new
   end
@@ -40,7 +42,6 @@ class APICache
     }.merge(options)
     
     cache_state = cache.state(key, options[:cache], options[:valid])
-    # puts "The cache state for #{key} is #{cache_state}"
     
     if cache_state == :current
       cache.get(key)
@@ -51,11 +52,11 @@ class APICache
         cache.set(key, value)
         value
       rescue APICache::CannotFetch
-        # puts "Could not fetch new data from API"
+        APICache.logger.log "Failed to fetch new data from API"
         if cache_state == :refetch
           cache.get(key)
         else
-          # TODO: Add logging / notification.
+          APICache.logger.log "Data not available in the cache or from API"
           raise APICache::NotAvailableError
         end
       end
@@ -68,3 +69,4 @@ require 'api_cache/api'
 require 'api_cache/abstract_store'
 require 'api_cache/memory_store'
 require 'api_cache/memcache_store'
+require 'api_cache/logger'

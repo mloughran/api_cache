@@ -1,18 +1,18 @@
 class APICache::MemoryStore < APICache::AbstractStore
   def initialize
-    puts "Init cache"
+    APICache.logger.log "Using memory store"
     @cache = {}
     true
   end
 
   def set(key, value)
-    puts "Setting the cache"
+    APICache.logger.log("cache: set (#{key})")
     @cache[key] = [Time.now, value]
     true
   end
 
   def get(key)
-    puts "Serving from cache"
+    APICache.logger.log("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
     @cache[key][1]
   end
 
