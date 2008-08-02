@@ -66,7 +66,8 @@ end
 
 require 'api_cache/cache'
 require 'api_cache/api'
-require 'api_cache/abstract_store'
-require 'api_cache/memory_store'
-require 'api_cache/memcache_store'
 require 'api_cache/logger'
+
+APICache.autoload 'AbstractStore', 'api_cache/abstract_store'
+APICache.autoload 'MemoryStore', 'api_cache/memory_store'
+APICache.autoload 'MemcacheStore', 'api_cache/memcache_store'
