@@ -10,8 +10,8 @@ class APICache
   end
   
   # Initializes the cache
-  def self.start(store = APICache::MemcacheStore)
-    APICache.logger = APICache::Logger.new
+  def self.start(store = APICache::MemcacheStore, logger = APICache::Logger.new)
+    APICache.logger = logger
     APICache.cache  = APICache::Cache.new(store)
     APICache.api    = APICache::API.new
   end
