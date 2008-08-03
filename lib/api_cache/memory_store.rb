@@ -12,8 +12,9 @@ class APICache::MemoryStore < APICache::AbstractStore
   end
 
   def get(key)
+    data = @cache[key][1]
     APICache.logger.log("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
-    @cache[key][1]
+    data
   end
 
   def exists?(key)
