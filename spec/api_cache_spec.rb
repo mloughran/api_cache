@@ -4,10 +4,22 @@ describe APICache do
   before :each do
     APICache.start(APICache::MemoryStore)
     @key = 'random_key'
+    @encoded_key = "1520171c64bfb71a95c97d310eea3492"
     @data = 'some bit of data'
   end
   
   describe "get method" do
+    
+    it "should MD5 encode the cache key" do
+      APICache::Cache.new(APICache::MemoryStore).encode(@key).should == @encoded_key
+    end
+    it "should encode the cache key before calling the store" do
+      APICache.cache.should_receive(:state).and_return(:current)
+      APICache.cache.store.should_receive(:get).with(@encoded_key).and_return(@data)
+      APICache.cache.should_receive(:encode).with(@key).and_return(@encoded_key)
+      APICache.get(@key).should != @data
+    end
+    
     it "should fetch data from the cache if the state is :current" do
       APICache.cache.should_receive(:state).and_return(:current)
       APICache.cache.should_receive(:get).and_return(@data)
