@@ -52,3 +52,8 @@ Currently there are two stores available: `MemcacheStore` and `MemoryStore`. `Me
 I suppose you'll want to get your hands on this magic. For now just grab the source from [github](http://github.com/mloughran/api_cache/tree/master) and `rake install`. I'll get a gem sorted soon.
 
 Please send feedback if you think of any other functionality that would be handy.
+
+Copyright
+=========
+
+Copyright (c) 2008 Martyn Loughran. See LICENSE for details.
