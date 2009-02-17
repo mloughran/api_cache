@@ -1,5 +1,26 @@
-api_cache
-=========
+APICache (aka api_cache)
+========================
+
+For the impatient
+-----------------
+
+    # Install
+    sudo gem install mloughran-api_cache -s http://gems.github.com
+    
+    # Require
+    require 'rubygems'
+    gem 'mloughran-api_cache'
+    require 'api_cache'
+    
+    # Configure
+    APICache.start(APICache::MemoryStore)
+    
+    # Use
+    APICache.get("http://twitter.com/statuses/public_timeline.rss")
+
+For everyone else
+-----------------
+
 You want to use the Twitter API but you don't want to die? I have the solution to API caching:
 
     APICache.get("http://twitter.com/statuses/public_timeline.rss")
@@ -49,9 +70,9 @@ Currently there are two stores available: `MemcacheStore` and `MemoryStore`. `Me
 
     APICache.start(APICache::MemoryStore)
 
-I suppose you'll want to get your hands on this magic. For now just grab the source from [github](http://github.com/mloughran/api_cache/tree/master) and `rake install`. I'll get a gem sorted soon.
+I suppose you'll want to get your hands on this magic! Just take a look at the instructions above for the impatient. Well done for reading this first!
 
-Please send feedback if you think of any other functionality that would be handy.
+Please send feedback to me [at] mloughran [dot] com if you think of any other functionality that would be handy.
 
 Copyright
 =========
