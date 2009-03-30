@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe APICache do
   before :each do
-    APICache.start(APICache::MemoryStore)
     @key = 'random_key'
     @encoded_key = "1520171c64bfb71a95c97d310eea3492"
     @data = 'some bit of data'

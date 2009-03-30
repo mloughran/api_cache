@@ -53,7 +53,7 @@ class APICache::API
 private
   
   def get_via_http(key, timeout)
-    response = Net::HTTP.get_response(URI.parse(key))
+    response = redirecting_get(key)
     case response
     when Net::HTTPSuccess
       # 2xx response code
@@ -61,5 +61,10 @@ private
     else
       raise APICache::Invalid, "Invalid http response: #{response.code}"
     end
+  end
+
+  def redirecting_get(url)
+    r = Net::HTTP.get_response(URI.parse(url))
+    r.header['location'] ? redirecting_get(r.header['location']) : r
   end
 end
