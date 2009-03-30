@@ -51,13 +51,14 @@ class APICache
         value = api.get(key, options[:timeout], &block)
         cache.set(key, value)
         value
-      rescue APICache::CannotFetch
-        APICache.logger.log "Failed to fetch new data from API"
+      rescue APICache::CannotFetch => e
+        APICache.logger.log "Failed to fetch new data from API because " \
+          "#{e.class}: #{e.message}"
         if cache_state == :refetch
           cache.get(key)
         else
           APICache.logger.log "Data not available in the cache or from API"
-          raise APICache::NotAvailableError
+          raise APICache::NotAvailableError, e.message
         end
       end
     end

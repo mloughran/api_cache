@@ -46,8 +46,8 @@ class APICache::API
         get_via_http(key, timeout)
       end
     end
-  rescue Timeout::Error, APICache::Invalid
-    raise APICache::CannotFetch
+  rescue Timeout::Error, APICache::Invalid => e
+    raise APICache::CannotFetch, e.message
   end
   
 private
@@ -59,7 +59,7 @@ private
       # 2xx response code
       response.body
     else
-      raise APICache::Invalid
+      raise APICache::Invalid, "Invalid http response: #{response.code}"
     end
   end
 end
