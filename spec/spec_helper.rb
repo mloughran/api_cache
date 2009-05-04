@@ -5,3 +5,4 @@ require "api_cache"
 require "spec"
 
 APICache.start(APICache::MemoryStore)
+APICache.logger.level = Logger::FATAL

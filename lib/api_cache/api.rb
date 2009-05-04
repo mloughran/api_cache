@@ -34,14 +34,14 @@ class APICache
     def queryable?
       if query_times[@key]
         if Time.now - query_times[@key] > @period
-          APICache.logger.log "Queryable: true - retry_time has passed"
+          APICache.logger.debug "Queryable: true - retry_time has passed"
           true
         else
-          APICache.logger.log "Queryable: false - queried too recently"
+          APICache.logger.debug "Queryable: false - queried too recently"
           false
         end
       else
-        APICache.logger.log "Queryable: true - never used API before"
+        APICache.logger.debug "Queryable: true - never used API before"
         true
       end
     end
@@ -56,7 +56,7 @@ class APICache
     # APICache::Invalid.
     #
     def get
-      APICache.logger.log "Fetching data from the API"
+      APICache.logger.debug "Fetching data from the API"
       query_times[@key] = Time.now
       Timeout::timeout(@timeout) do
         if @block

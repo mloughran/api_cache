@@ -1,3 +1,5 @@
+require 'logger'
+
 # Contains the complete public API for APICache.
 # 
 # Uses Cache and API classes to determine the correct behaviour.
@@ -11,12 +13,19 @@ class APICache
     attr_accessor :store
     attr_accessor :api
     attr_accessor :logger
+    
+    def logger
+      @logger ||= begin
+        log = Logger.new(STDOUT)
+        log.level = Logger::INFO
+        log
+      end
+    end
   end
   
   # Initializes the cache
   # 
-  def self.start(store = nil, logger = nil)
-    APICache.logger = logger || APICache::Logger.new
+  def self.start(store = nil)
     APICache::Cache.store = (store || APICache::MemcacheStore).new
   end
   
@@ -67,12 +76,12 @@ class APICache
         cache.set(value)
         value
       rescue APICache::CannotFetch => e
-        APICache.logger.log "Failed to fetch new data from API because " \
+        APICache.logger.info "Failed to fetch new data from API because " \
           "#{e.class}: #{e.message}"
         if cache_state == :refetch
           cache.get
         else
-          APICache.logger.log "Data not available in the cache or from API"
+          APICache.logger.warn "Data not available in the cache or from API"
           raise APICache::NotAvailableError, e.message
         end
       end
@@ -82,7 +91,6 @@ end
 
 require 'api_cache/cache'
 require 'api_cache/api'
-require 'api_cache/logger'
 
 APICache.autoload 'AbstractStore', 'api_cache/abstract_store'
 APICache.autoload 'MemoryStore', 'api_cache/memory_store'

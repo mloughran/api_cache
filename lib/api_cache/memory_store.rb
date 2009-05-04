@@ -1,20 +1,20 @@
 class APICache
   class MemoryStore < APICache::AbstractStore
     def initialize
-      APICache.logger.log "Using memory store"
+      APICache.logger.debug "Using memory store"
       @cache = {}
       true
     end
 
     def set(key, value)
-      APICache.logger.log("cache: set (#{key})")
+      APICache.logger.debug("cache: set (#{key})")
       @cache[key] = [Time.now, value]
       true
     end
 
     def get(key)
       data = @cache[key][1]
-      APICache.logger.log("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
+      APICache.logger.debug("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
       data
     end
 

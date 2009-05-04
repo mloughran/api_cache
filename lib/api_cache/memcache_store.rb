@@ -15,7 +15,7 @@ class APICache
     end
 
     def initialize
-      APICache.logger.log "Using memcached store"
+      APICache.logger.debug "Using memcached store"
       namespace = 'api_cache'
       host = '127.0.0.1:11211'
       @memcache = MemCache.new(host, {:namespace => namespace})
@@ -28,13 +28,13 @@ class APICache
     def set(key, data)
       @memcache.set(key, data)
       @memcache.set("#{key}_created_at", Time.now)
-      APICache.logger.log("cache: set (#{key})")
+      APICache.logger.debug("cache: set (#{key})")
       true
     end
 
     def get(key)
       data = @memcache.get(key)
-      APICache.logger.log("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
+      APICache.logger.debug("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
       data
     end
 
