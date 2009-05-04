@@ -1,19 +1,19 @@
 require 'logger'
 
 # Contains the complete public API for APICache.
-# 
+#
 # Uses Cache and API classes to determine the correct behaviour.
-# 
+#
 class APICache
   class NotAvailableError < RuntimeError; end
   class Invalid <  RuntimeError; end
   class CannotFetch < RuntimeError; end
-  
+
   class << self
     attr_accessor :store
     attr_accessor :api
     attr_accessor :logger
-    
+
     def logger
       @logger ||= begin
         log = Logger.new(STDOUT)
@@ -22,51 +22,51 @@ class APICache
       end
     end
   end
-  
+
   # Initializes the cache
-  # 
+  #
   def self.start(store = nil)
     APICache::Cache.store = (store || APICache::MemcacheStore).new
   end
-  
-  # Raises an APICache::NotAvailableError if it can't get a value. You should 
+
+  # Raises an APICache::NotAvailableError if it can't get a value. You should
   # rescue this if your application code.
-  # 
-  # Optionally call with a block. The value of the block is then used to 
+  #
+  # Optionally call with a block. The value of the block is then used to
   # set the cache rather than calling the url. Use it for example if you need
   # to make another type of request, catch custom error codes etc. To signal
-  # that the call failed just raise APICache::Invalid - the value will then 
-  # not be cached and the api will not be called again for options[:timeout] 
+  # that the call failed just raise APICache::Invalid - the value will then
+  # not be cached and the api will not be called again for options[:timeout]
   # seconds. If an old value is available in the cache then it will be used.
-  # 
+  #
   # For example:
   #   APICache.get("http://twitter.com/statuses/user_timeline/6869822.atom")
-  # 
+  #
   #   APICache.get \
   #     "http://twitter.com/statuses/user_timeline/6869822.atom",
   #     :cache => 60, :valid => 600
-  # 
+  #
   def self.get(key, options = {}, &block)
     options = {
       :cache => 600,    # 10 minutes  After this time fetch new data
       :valid => 86400,  # 1 day       Maximum time to use old data
-                        #             :forever is a valid option
+      #             :forever is a valid option
       :period => 60,    # 1 minute    Maximum frequency to call API
       :timeout => 5     # 5 seconds   API response timeout
     }.merge(options)
-    
+
     cache = APICache::Cache.new(key, {
-      :cache => options[:cache], 
+      :cache => options[:cache],
       :valid => options[:valid]
     })
-    
+
     api = APICache::API.new(key, {
-      :period => options[:period], 
+      :period => options[:period],
       :timeout => options[:timeout]
     }, &block)
-    
+
     cache_state = cache.state
-    
+
     if cache_state == :current
       cache.get
     else
