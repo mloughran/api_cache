@@ -7,6 +7,40 @@ describe APICache do
     @api_data = 'data from the api'
   end
   
+  describe "start" do
+    before :each do
+      APICache::Cache.store = nil
+    end
+
+    it "should use APICache::MemoryStore by default" do
+      APICache.start
+      APICache::Cache.store.should be_kind_of(APICache::MemoryStore)
+    end
+
+    it "should allow instances of APICache::AbstractStore to be passed" do
+      APICache.start(APICache::MemoryStore.new)
+      APICache::Cache.store.should be_kind_of(APICache::MemoryStore)
+    end
+
+    it "should allow moneta instances to be passed" do
+      require 'moneta'
+      require 'moneta/memory'
+      APICache.start(Moneta::Memory.new)
+      APICache::Cache.store.should be_kind_of(APICache::MonetaStore)
+    end
+
+    it "should raise an exception if anything else is passed" do
+      lambda {
+        APICache.start(Class)
+      }.should raise_error(ArgumentError, 'Please supply an instance of either a moneta store or a subclass of APICache::AbstractStore')
+    end
+
+    after :all do
+      APICache::Cache.store = nil
+      APICache.start
+    end
+  end
+
   describe "get method" do
     before :each do
       @api = mock(APICache::API, :get => @api_data, :queryable? => true)

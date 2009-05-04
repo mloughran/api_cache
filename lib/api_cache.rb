@@ -23,10 +23,25 @@ class APICache
     end
   end
 
-  # Initializes the cache
+  # Start APICache by specifying a cache to use.
   #
-  def self.start(store = nil)
-    APICache::Cache.store = (store || APICache::MemcacheStore).new
+  # For convenience, when no store is passed an in memory store will be used.
+  # However a moneta store of some description is recommended.
+  #
+  # Alternatively you can create your own subclass of APICache::AbstractStore.
+  #
+  def self.start(store = APICache::MemoryStore.new)
+    raise "APICache is already started" unless APICache::Cache.store.nil?
+
+    APICache::Cache.store = begin
+      if store.class < APICache::AbstractStore
+        store
+      elsif store.class.to_s =~ /Moneta/
+        MonetaStore.new(store)
+      else
+        raise ArgumentError, "Please supply an instance of either a moneta store or a subclass of APICache::AbstractStore"
+      end
+    end
   end
 
   # Raises an APICache::NotAvailableError if it can't get a value. You should
@@ -94,4 +109,4 @@ require 'api_cache/api'
 
 APICache.autoload 'AbstractStore', 'api_cache/abstract_store'
 APICache.autoload 'MemoryStore', 'api_cache/memory_store'
-APICache.autoload 'MemcacheStore', 'api_cache/memcache_store'
+APICache.autoload 'MonetaStore', 'api_cache/moneta_store'

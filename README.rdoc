@@ -11,7 +11,7 @@
     require 'api_cache'
     
     # Configure
-    APICache.start(APICache::MemoryStore)
+    APICache.start
     
     # Use
     APICache.get("http://twitter.com/statuses/public_timeline.rss")
@@ -63,9 +63,12 @@ Before using the APICache you need to initialize the caches. In merb, for exampl
 
     APICache.start
 
-Currently there are two stores available: <tt>MemcacheStore</tt> and <tt>MemoryStore</tt>. <tt>MemcacheStore</tt> is the default but if you'd like to use <tt>MemoryStore</tt>, or another store - see <tt>AbstractStore</tt>, just supply it to the start method:
+By default an in memory hash is used - obviously not a great idea. Thankfully APICache can use any moneta store, so for example if you wanted to use memcache you'd do this:
 
-    APICache.start(APICache::MemoryStore)
+    require 'moneta/memcache'
+    memcache_store = Moneta::Memcache.new(:server => "localhost")
+
+    APICache.start(memcache_store)
 
 I suppose you'll want to get your hands on this magic! Just take a look at the instructions above for the impatient. Well done for reading this first!
 
