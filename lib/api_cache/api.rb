@@ -4,19 +4,34 @@ require 'net/http'
 # last queried in case there is a limit to the number that can be made.
 #
 class APICache::API
-  def initialize
-    @query_times = {}
+  @query_times = {}
+  class << self
+    attr_reader :query_times
+  end
+  
+  # Takes the following options
+  # 
+  # period:: Maximum frequency to call the API
+  # timeout:: Timeout when calling api (either to the proviced url or 
+  #           excecuting the passed block)
+  # block:: If passed then the block is excecuted instead of HTTP GET against 
+  #         the provided key
+  # 
+  def initialize(key, options, &block)
+    @key, @block = key, block
+    @timeout = options[:timeout]
+    @period = options[:period]
   end
 
-  # Checks whether the API can be queried (i.e. whether retry_time has passed
+  # Checks whether the API can be queried (i.e. whether :period has passed
   # since the last query to the API).
   #
-  # If retry_time is 0 then there is no limit on how frequently queries can
+  # If :period is 0 then there is no limit on how frequently queries can
   # be made to the API.
   #
-  def queryable?(key, retry_time)
-    if @query_times[key]
-      if Time.now - @query_times[key] > retry_time
+  def queryable?
+    if query_times[@key]
+      if Time.now - query_times[@key] > @period
         APICache.logger.log "Queryable: true - retry_time has passed"
         true
       else
@@ -38,15 +53,15 @@ class APICache::API
   # If the block is unable to fetch the value from the API it should raise
   # APICache::Invalid.
   #
-  def get(key, timeout, &block)
+  def get
     APICache.logger.log "Fetching data from the API"
-    @query_times[key] = Time.now
-    Timeout::timeout(timeout) do
-      if block_given?
+    query_times[@key] = Time.now
+    Timeout::timeout(@timeout) do
+      if @block
         # This should raise APICache::Invalid if it is not correct
-        yield
+        @block.call
       else
-        get_via_http(key, timeout)
+        get_key_via_http
       end
     end
   rescue Timeout::Error, APICache::Invalid => e
@@ -55,8 +70,8 @@ class APICache::API
 
   private
 
-  def get_via_http(key, timeout)
-    response = redirecting_get(key)
+  def get_key_via_http
+    response = redirecting_get(@key)
     case response
     when Net::HTTPSuccess
       # 2xx response code
@@ -69,5 +84,9 @@ class APICache::API
   def redirecting_get(url)
     r = Net::HTTP.get_response(URI.parse(url))
     r.header['location'] ? redirecting_get(r.header['location']) : r
+  end
+  
+  def query_times
+    self.class.query_times
   end
 end

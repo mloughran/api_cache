@@ -4,10 +4,14 @@ require 'digest/md5'
 # cache and delegates storage to the various cache stores.
 #
 class APICache::Cache
-  attr_accessor :store
+  class << self
+    attr_accessor :store
+  end
 
-  def initialize(store)
-    @store = store.send(:new)
+  def initialize(key, options)
+    @key = key
+    @cache = options[:cache]
+    @valid = options[:valid]
   end
 
   # Returns one of the following options depending on the state of the key:
@@ -17,11 +21,11 @@ class APICache::Cache
   # * :invalid (data is too old to be useful)
   # * :missing (do data for this key)
   #
-  def state(key, refetch_time, invalid_time)
-    if @store.exists?(encode(key))
-      if !@store.expired?(encode(key), refetch_time)
+  def state
+    if store.exists?(hash)
+      if !store.expired?(hash, @cache)
         :current
-      elsif (invalid_time == :forever) || !@store.expired?(encode(key), invalid_time)
+      elsif (@valid == :forever) || !store.expired?(hash, @valid)
         :refetch
       else
         :invalid
@@ -31,16 +35,22 @@ class APICache::Cache
     end
   end
 
-  def get(key)
-    @store.get(encode(key))
+  def get
+    store.get(hash)
   end
 
-  def set(key, value)
-    @store.set(encode(key), value)
+  def set(value)
+    store.set(hash, value)
     true
   end
-
-  def encode(key)
-    Digest::MD5.hexdigest key
+  
+  private
+  
+  def hash
+    Digest::MD5.hexdigest @key
+  end
+  
+  def store
+    self.class.store
   end
 end

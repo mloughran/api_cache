@@ -4,20 +4,19 @@ class APICache
   class CannotFetch < RuntimeError; end
   
   class << self
-    attr_accessor :cache
+    attr_accessor :store
     attr_accessor :api
     attr_accessor :logger
   end
   
   # Initializes the cache
-  def self.start(store = APICache::MemcacheStore, logger = APICache::Logger.new)
-    APICache.logger = logger
-    APICache.cache  = APICache::Cache.new(store)
-    APICache.api    = APICache::API.new
+  def self.start(store = nil, logger = nil)
+    APICache.logger = logger || APICache::Logger.new
+    APICache::Cache.store = (store || APICache::MemcacheStore).new
   end
   
-  # Raises an APICache::NotAvailableError if it can't get a value. You should rescue this
-  # if your application code.
+  # Raises an APICache::NotAvailableError if it can't get a value. You should 
+  # rescue this if your application code.
   # 
   # Optionally call with a block. The value of the block is then used to 
   # set the cache rather than calling the url. Use it for example if you need
@@ -32,6 +31,7 @@ class APICache
   #   APICache.get \
   #     "http://twitter.com/statuses/user_timeline/6869822.atom",
   #     :cache => 60, :valid => 600
+  # 
   def self.get(key, options = {}, &block)
     options = {
       :cache => 600,    # 10 minutes  After this time fetch new data
@@ -41,21 +41,31 @@ class APICache
       :timeout => 5     # 5 seconds   API response timeout
     }.merge(options)
     
-    cache_state = cache.state(key, options[:cache], options[:valid])
+    cache = APICache::Cache.new(key, {
+      :cache => options[:cache], 
+      :valid => options[:valid]
+    })
+    
+    api = APICache::API.new(key, {
+      :period => options[:period], 
+      :timeout => options[:timeout]
+    }, &block)
+    
+    cache_state = cache.state
     
     if cache_state == :current
-      cache.get(key)
+      cache.get
     else
       begin
-        raise APICache::CannotFetch unless api.queryable?(key, options[:period])
-        value = api.get(key, options[:timeout], &block)
-        cache.set(key, value)
+        raise APICache::CannotFetch unless api.queryable?
+        value = api.get
+        cache.set(value)
         value
       rescue APICache::CannotFetch => e
         APICache.logger.log "Failed to fetch new data from API because " \
           "#{e.class}: #{e.message}"
         if cache_state == :refetch
-          cache.get(key)
+          cache.get
         else
           APICache.logger.log "Data not available in the cache or from API"
           raise APICache::NotAvailableError, e.message
