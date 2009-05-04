@@ -1,56 +1,58 @@
 require 'digest/md5'
 
-# Cache performs calculations relating to the status of items stored in the
-# cache and delegates storage to the various cache stores.
-#
-class APICache::Cache
-  class << self
-    attr_accessor :store
-  end
-
-  def initialize(key, options)
-    @key = key
-    @cache = options[:cache]
-    @valid = options[:valid]
-  end
-
-  # Returns one of the following options depending on the state of the key:
+class APICache
+  # Cache performs calculations relating to the status of items stored in the
+  # cache and delegates storage to the various cache stores.
   #
-  # * :current (key has been set recently)
-  # * :refetch (data should be refetched but is still available for use)
-  # * :invalid (data is too old to be useful)
-  # * :missing (do data for this key)
-  #
-  def state
-    if store.exists?(hash)
-      if !store.expired?(hash, @cache)
-        :current
-      elsif (@valid == :forever) || !store.expired?(hash, @valid)
-        :refetch
-      else
-        :invalid
-      end
-    else
-      :missing
+  class Cache
+    class << self
+      attr_accessor :store
     end
-  end
 
-  def get
-    store.get(hash)
-  end
+    def initialize(key, options)
+      @key = key
+      @cache = options[:cache]
+      @valid = options[:valid]
+    end
 
-  def set(value)
-    store.set(hash, value)
-    true
-  end
-  
-  private
-  
-  def hash
-    Digest::MD5.hexdigest @key
-  end
-  
-  def store
-    self.class.store
+    # Returns one of the following options depending on the state of the key:
+    #
+    # * :current (key has been set recently)
+    # * :refetch (data should be refetched but is still available for use)
+    # * :invalid (data is too old to be useful)
+    # * :missing (do data for this key)
+    #
+    def state
+      if store.exists?(hash)
+        if !store.expired?(hash, @cache)
+          :current
+        elsif (@valid == :forever) || !store.expired?(hash, @valid)
+          :refetch
+        else
+          :invalid
+        end
+      else
+        :missing
+      end
+    end
+
+    def get
+      store.get(hash)
+    end
+
+    def set(value)
+      store.set(hash, value)
+      true
+    end
+
+    private
+
+    def hash
+      Digest::MD5.hexdigest @key
+    end
+
+    def store
+      self.class.store
+    end
   end
 end

@@ -1,3 +1,7 @@
+# Contains the complete public API for APICache.
+# 
+# Uses Cache and API classes to determine the correct behaviour.
+# 
 class APICache
   class NotAvailableError < RuntimeError; end
   class Invalid <  RuntimeError; end
@@ -10,6 +14,7 @@ class APICache
   end
   
   # Initializes the cache
+  # 
   def self.start(store = nil, logger = nil)
     APICache.logger = logger || APICache::Logger.new
     APICache::Cache.store = (store || APICache::MemcacheStore).new
