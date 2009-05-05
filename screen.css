@@ -1,5 +1,6 @@
 body {
 	font-family: Georgia, "Times New Roman", Times, serif;
+	background: #eee;
 }
 
 #wrapper {
@@ -7,6 +8,7 @@ body {
 	margin: 0 auto;
 	border: 1px solid #ccc;
 	padding: 10px;
+	background: white;
 }
 
 #header {
