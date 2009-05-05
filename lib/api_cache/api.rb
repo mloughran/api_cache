@@ -6,11 +6,6 @@ class APICache
   # Ensures that the API is not called more frequently than every +period+ seconds, and times out API requests after +timeout+ seconds.
   #
   class API
-    @query_times = {}
-    class << self
-      attr_reader :query_times
-    end
-
     # Takes the following options
     #
     # period:: Maximum frequency to call the API
@@ -32,8 +27,8 @@ class APICache
     # be made to the API.
     #
     def queryable?
-      if query_times[@key]
-        if Time.now - query_times[@key] > @period
+      if previously_queried?
+        if Time.now - queried_at > @period
           APICache.logger.debug "Queryable: true - retry_time has passed"
           true
         else
@@ -57,7 +52,7 @@ class APICache
     #
     def get
       APICache.logger.debug "Fetching data from the API"
-      query_times[@key] = Time.now
+      set_queried_at
       Timeout::timeout(@timeout) do
         if @block
           # This should raise APICache::Invalid if it is not correct
@@ -88,8 +83,16 @@ class APICache
       r.header['location'] ? redirecting_get(r.header['location']) : r
     end
 
-    def query_times
-      self.class.query_times
+    def previously_queried?
+      APICache.store.exists?("#{@key}_queried_at")
+    end
+    
+    def queried_at
+      APICache.store.get("#{@key}_queried_at")
+    end
+    
+    def set_queried_at
+      APICache.store.set("#{@key}_queried_at", Time.now)
     end
   end
 end
