@@ -9,6 +9,12 @@ class APICache
       attr_accessor :store
     end
 
+    # Takes the following options
+    #
+    # cache:: Length of time to cache before re-requesting
+    # valid:: Length of time to consider data still valid if API cannot be
+    #         fetched - :forever is a valid option.
+    #
     def initialize(key, options)
       @key = key
       @cache = options[:cache]

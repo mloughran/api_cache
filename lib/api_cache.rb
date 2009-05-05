@@ -10,8 +10,6 @@ class APICache
   class CannotFetch < RuntimeError; end
 
   class << self
-    attr_accessor :store
-    attr_accessor :api
     attr_accessor :logger
 
     def logger
