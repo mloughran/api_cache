@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: README.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>README.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>README.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Wed May 06 00:34:05 +0100 2009</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1><a href="../classes/APICache.html">APICache</a> (aka api_cache)</h1>
+<h2>For the impatient</h2>
+<pre>
+    # Install
+    sudo gem install mloughran-api_cache -s http://gems.github.com
+
+    # Require
+    require 'rubygems'
+    gem 'mloughran-api_cache'
+    require 'api_cache'
+
+    # Use
+    APICache.get(&quot;http://twitter.com/statuses/public_timeline.rss&quot;)
+
+    # Use a proper store
+    require 'moneta/memcache'
+    APICache.store = Moneta::Memcache.new(:server =&gt; &quot;localhost&quot;)
+</pre>
+<h2>For everyone else</h2>
+<p>
+You want to use the Twitter API but you don&#8216;t want to die? I have the
+solution to API caching:
+</p>
+<pre>
+    APICache.get(&quot;http://twitter.com/statuses/public_timeline.rss&quot;)
+</pre>
+<p>
+You get the following functionality for free:
+</p>
+<ul>
+<li>New data every 10 minutes
+
+</li>
+<li>If the twitter API dies then keep using the last data received for a day.
+Then assume it&#8216;s invalid and announce that Twitter has FAILED
+(optional).
+
+</li>
+<li>Don&#8216;t hit the rate limit (70 requests per 60 minutes)
+
+</li>
+</ul>
+<p>
+So what exactly does <tt><a
+href="../classes/APICache.html">APICache</a></tt> do? Given cached data
+less than 10 minutes old, it returns that. Otherwise, assuming it
+didn&#8216;t try to request the URL within the last minute (to avoid the
+rate limit), it makes a get request to the Twitter API. If the Twitter API
+timeouts or doesn&#8216;t return a 2xx code (very likely) we&#8216;re still
+fine: it just returns the last data fetched (as long as it&#8216;s less
+than a day old). In the exceptional case that all is lost and no data can
+be returned, it raises an <tt><a
+href="../classes/APICache/NotAvailableError.html">APICache::NotAvailableError</a></tt>
+exception. You&#8216;re responsible for catching this exception and
+complaining bitterly to the internet.
+</p>
+<p>
+All very simple. What if you need to do something more complicated? Say you
+need authentication or the silly API you&#8216;re using doesn&#8216;t
+follow a nice convention of returning 2xx for success. Then you need a
+block:
+</p>
+<pre>
+    APICache.get('twitter_replies', :cache =&gt; 3600) do
+      Net::HTTP.start('twitter.com') do |http|
+        req = Net::HTTP::Get.new('/statuses/replies.xml')
+        req.basic_auth 'username', 'password'
+        response = http.request(req)
+        case response
+        when Net::HTTPSuccess
+          # 2xx response code
+          response.body
+        else
+          raise APICache::Invalid
+        end
+      end
+    end
+</pre>
+<p>
+All the caching is still handled for you. If you supply a block then the
+first argument to <tt><a
+href="../classes/APICache.html#M000003">APICache.get</a></tt> is assumed to
+be a unique key rather than a URL. Throwing <tt><a
+href="../classes/APICache/Invalid.html">APICache::Invalid</a></tt> signals
+to <tt><a href="../classes/APICache.html">APICache</a></tt> that the
+request was not successful.
+</p>
+<p>
+You can send any of the following options to <tt><a
+href="../classes/APICache.html#M000003">APICache.get</a>(url, options = {},
+&amp;block)</tt>. These are the default values (times are all in seconds):
+</p>
+<pre>
+    {
+      :cache =&gt; 600,    # 10 minutes  After this time fetch new data
+      :valid =&gt; 86400,  # 1 day       Maximum time to use old data
+                        #             :forever is a valid option
+      :period =&gt; 60,    # 1 minute    Maximum frequency to call API
+      :timeout =&gt; 5     # 5 seconds   API response timeout
+    }
+</pre>
+<p>
+Before using the <a href="../classes/APICache.html">APICache</a> you should
+set the cache to use. By default an in memory hash is used - obviously not
+a great idea. Thankfully <a href="../classes/APICache.html">APICache</a>
+can use any moneta store, so for example if you wanted to use memcache
+you&#8216;d do this:
+</p>
+<pre>
+    require 'moneta/memcache'
+    APICache.store = Moneta::Memcache.new(:server =&gt; &quot;localhost&quot;)
+</pre>
+<p>
+I suppose you&#8216;ll want to get your hands on this magic! Just take a
+look at the instructions above for the impatient. Well done for reading
+this first!
+</p>
+<p>
+Please send feedback to me [at] mloughran [dot] com if you think of any
+other functionality that would be handy.
+</p>
+<h2>Copyright</h2>
+<p>
+Copyright (c) 2008 Martyn Loughran. See LICENSE for details.
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
