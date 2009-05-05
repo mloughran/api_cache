@@ -9,24 +9,24 @@ describe APICache do
   
   describe "start" do
     before :each do
-      APICache::Cache.store = nil
+      APICache.store = nil
     end
 
     it "should use APICache::MemoryStore by default" do
       APICache.start
-      APICache::Cache.store.should be_kind_of(APICache::MemoryStore)
+      APICache.store.should be_kind_of(APICache::MemoryStore)
     end
 
     it "should allow instances of APICache::AbstractStore to be passed" do
       APICache.start(APICache::MemoryStore.new)
-      APICache::Cache.store.should be_kind_of(APICache::MemoryStore)
+      APICache.store.should be_kind_of(APICache::MemoryStore)
     end
 
     it "should allow moneta instances to be passed" do
       require 'moneta'
       require 'moneta/memory'
       APICache.start(Moneta::Memory.new)
-      APICache::Cache.store.should be_kind_of(APICache::MonetaStore)
+      APICache.store.should be_kind_of(APICache::MonetaStore)
     end
 
     it "should raise an exception if anything else is passed" do
@@ -36,7 +36,7 @@ describe APICache do
     end
 
     after :all do
-      APICache::Cache.store = nil
+      APICache.store = nil
       APICache.start
     end
   end

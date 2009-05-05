@@ -11,6 +11,7 @@ class APICache
 
   class << self
     attr_accessor :logger
+    attr_accessor :store
 
     def logger
       @logger ||= begin
@@ -29,9 +30,9 @@ class APICache
   # Alternatively you can create your own subclass of APICache::AbstractStore.
   #
   def self.start(store = APICache::MemoryStore.new)
-    raise "APICache is already started" unless APICache::Cache.store.nil?
+    raise "APICache is already started" unless APICache.store.nil?
 
-    APICache::Cache.store = begin
+    APICache.store = begin
       if store.class < APICache::AbstractStore
         store
       elsif store.class.to_s =~ /Moneta/

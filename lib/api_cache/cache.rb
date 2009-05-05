@@ -5,10 +5,6 @@ class APICache
   # cache and delegates storage to the various cache stores.
   #
   class Cache
-    class << self
-      attr_accessor :store
-    end
-
     # Takes the following options
     #
     # cache:: Length of time to cache before re-requesting
@@ -58,7 +54,7 @@ class APICache
     end
 
     def store
-      self.class.store
+      APICache.store
     end
   end
 end

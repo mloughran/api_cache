@@ -17,7 +17,7 @@ describe APICache::Cache do
 
   it "should md5 encode the provided key" do
     cache = APICache::Cache.new('test_md5', @options)
-    cache.class.store.should_receive(:set).
+    APICache.store.should_receive(:set).
       with('9050bddcf415f2d0518804e551c1be98', 'md5ing?')
     cache.set('md5ing?')
   end
