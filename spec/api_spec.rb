@@ -6,15 +6,23 @@ describe APICache::API do
       :period => 1,
       :timeout => 5
     }
+
+    # Reset the store otherwise get queried too recently erros
+    APICache.store = nil
   end
 
-  it "should not be queryable? for :period seconds after a request" do
+  it "should not be queryable for :period seconds after a request" do
     api = APICache::API.new('http://www.google.com/', @options)
-    api.should be_queryable
+
     api.get
-    api.should_not be_queryable
+    lambda {
+      api.get
+    }.should raise_error(APICache::CannotFetch, "Cannot fetch http://www.google.com/: queried too recently")
+
     sleep 1
-    api.should be_queryable
+    lambda {
+      api.get
+    }.should_not raise_error
   end
 
   describe "without a block - key is the url" do

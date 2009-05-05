@@ -100,7 +100,6 @@ class APICache
       cache.get
     else
       begin
-        raise APICache::CannotFetch unless api.queryable?
         value = api.get
         cache.set(value)
         value

@@ -41,7 +41,7 @@ describe APICache do
 
   describe "get method" do
     before :each do
-      @api = mock(APICache::API, :get => @api_data, :queryable? => true)
+      @api = mock(APICache::API, :get => @api_data)
       @cache = mock(APICache::Cache, :get => @cache_data, :set => true)
       
       APICache::API.stub!(:new).and_return(@api)

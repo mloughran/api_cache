@@ -2,43 +2,24 @@ require 'net/http'
 
 class APICache
   # Wraps up querying the API.
-  # 
-  # Ensures that the API is not called more frequently than every +period+ seconds, and times out API requests after +timeout+ seconds.
+  #
+  # Ensures that the API is not called more frequently than every +period+
+  # seconds, and times out API requests after +timeout+ seconds.
   #
   class API
     # Takes the following options
     #
-    # period:: Maximum frequency to call the API
+    # period:: Maximum frequency to call the API. If set to 0 then there is no
+    #          limit on how frequently queries can be made to the API.
     # timeout:: Timeout when calling api (either to the proviced url or
     #           excecuting the passed block)
-    # block:: If passed then the block is excecuted instead of HTTP GET 
+    # block:: If passed then the block is excecuted instead of HTTP GET
     #         against the provided key
     #
     def initialize(key, options, &block)
       @key, @block = key, block
       @timeout = options[:timeout]
       @period = options[:period]
-    end
-
-    # Checks whether the API can be queried (i.e. whether :period has passed
-    # since the last query to the API).
-    #
-    # If :period is 0 then there is no limit on how frequently queries can
-    # be made to the API.
-    #
-    def queryable?
-      if previously_queried?
-        if Time.now - queried_at > @period
-          APICache.logger.debug "Queryable: true - retry_time has passed"
-          true
-        else
-          APICache.logger.debug "Queryable: false - queried too recently"
-          false
-        end
-      else
-        APICache.logger.debug "Queryable: true - never used API before"
-        true
-      end
     end
 
     # Fetch data from the API.
@@ -51,6 +32,7 @@ class APICache
     # APICache::Invalid.
     #
     def get
+      check_queryable!
       APICache.logger.debug "Fetching data from the API"
       set_queried_at
       Timeout::timeout(@timeout) do
@@ -83,14 +65,31 @@ class APICache
       r.header['location'] ? redirecting_get(r.header['location']) : r
     end
 
+    # Checks whether the API can be queried (i.e. whether :period has passed
+    # since the last query to the API).
+    #
+    def check_queryable!
+      if previously_queried?
+        if Time.now - queried_at > @period
+          APICache.logger.debug "Queryable: true - retry_time has passed"
+        else
+          APICache.logger.debug "Queryable: false - queried too recently"
+          raise APICache::CannotFetch,
+            "Cannot fetch #{@key}: queried too recently"
+        end
+      else
+        APICache.logger.debug "Queryable: true - never used API before"
+      end
+    end
+
     def previously_queried?
       APICache.store.exists?("#{@key}_queried_at")
     end
-    
+
     def queried_at
       APICache.store.get("#{@key}_queried_at")
     end
-    
+
     def set_queried_at
       APICache.store.set("#{@key}_queried_at", Time.now)
     end
