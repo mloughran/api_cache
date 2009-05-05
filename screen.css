@@ -1,0 +1,43 @@
+body {
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+#wrapper {
+	width: 550px;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+	padding: 10px;
+}
+
+#header {
+	position: relative;
+}
+
+#header h1 {
+	background-color: red;
+	padding: 5px 10px;
+	color: white;
+	margin: 0;
+}
+
+#header ul#nav {
+	position: absolute;
+	top: 18px;
+	margin: 0;
+	right: 10px;
+}
+
+#header ul#nav li {
+	list-style: none;
+	margin: 0 0 0 10px;
+	display: inline;
+}
+
+#header ul#nav li a {
+	color: white;
+}
+
+pre {
+	border: 1px solid #ccc;
+	padding: 5px;
+}
