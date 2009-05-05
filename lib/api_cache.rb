@@ -1,8 +1,12 @@
 require 'logger'
 
 # Contains the complete public API for APICache.
-#
-# Uses Cache and API classes to determine the correct behaviour.
+# 
+# See APICache.get method and the README file.
+# 
+# Before using APICache you should set the store to use using 
+# APICache.store=. For convenience, when no store is set an in memory store 
+# will be used (and a warning will be logged).
 #
 class APICache
   class NotAvailableError < RuntimeError; end
@@ -13,32 +17,43 @@ class APICache
     attr_accessor :logger
     attr_accessor :store
 
-    def logger
+    def logger # :nodoc:
       @logger ||= begin
         log = Logger.new(STDOUT)
         log.level = Logger::INFO
         log
       end
     end
-  end
-
-  # Start APICache by specifying a cache to use.
-  #
-  # For convenience, when no store is passed an in memory store will be used.
-  # However a moneta store of some description is recommended.
-  #
-  # Alternatively you can create your own subclass of APICache::AbstractStore.
-  #
-  def self.start(store = APICache::MemoryStore.new)
-    raise "APICache is already started" unless APICache.store.nil?
-
-    APICache.store = begin
-      if store.class < APICache::AbstractStore
-        store
-      elsif store.class.to_s =~ /Moneta/
-        MonetaStore.new(store)
-      else
-        raise ArgumentError, "Please supply an instance of either a moneta store or a subclass of APICache::AbstractStore"
+    
+    # Set the logger to use. If not set, <tt>Logger.new(STDOUT)</tt> will be 
+    # used.
+    # 
+    def logger=(logger)
+      @logger = logger
+    end
+    
+    def store # :nodoc:
+      @store ||= begin
+        APICache.logger.warn("Using in memory store")
+        APICache::MemoryStore.new
+      end
+    end
+    
+    # Set the cache store to use. This should either be an instance of a 
+    # moneta store or a subclass of APICache::AbstractStore. Moneta is 
+    # recommended.
+    # 
+    def store=(store)
+      @store = begin
+        if store.class < APICache::AbstractStore
+          store
+        elsif store.class.to_s =~ /Moneta/
+          MonetaStore.new(store)
+        elsif store.nil?
+          nil
+        else
+          raise ArgumentError, "Please supply an instance of either a moneta store or a subclass of APICache::AbstractStore"
+        end
       end
     end
   end

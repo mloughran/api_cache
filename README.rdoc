@@ -10,11 +10,12 @@
     gem 'mloughran-api_cache'
     require 'api_cache'
     
-    # Configure
-    APICache.start
-    
     # Use
     APICache.get("http://twitter.com/statuses/public_timeline.rss")
+    
+    # Use a proper store
+    require 'moneta/memcache'
+    APICache.store = Moneta::Memcache.new(:server => "localhost")
 
 == For everyone else
 
@@ -59,16 +60,10 @@ You can send any of the following options to <tt>APICache.get(url, options = {},
       :timeout => 5     # 5 seconds   API response timeout
     }
 
-Before using the APICache you need to initialize the caches. In merb, for example, put this in your <tt>init.rb</tt>:
-
-    APICache.start
-
-By default an in memory hash is used - obviously not a great idea. Thankfully APICache can use any moneta store, so for example if you wanted to use memcache you'd do this:
+Before using the APICache you should set the cache to use. By default an in memory hash is used - obviously not a great idea. Thankfully APICache can use any moneta store, so for example if you wanted to use memcache you'd do this:
 
     require 'moneta/memcache'
-    memcache_store = Moneta::Memcache.new(:server => "localhost")
-
-    APICache.start(memcache_store)
+    APICache.store = Moneta::Memcache.new(:server => "localhost")
 
 I suppose you'll want to get your hands on this magic! Just take a look at the instructions above for the impatient. Well done for reading this first!
 

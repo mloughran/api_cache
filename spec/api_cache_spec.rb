@@ -7,37 +7,35 @@ describe APICache do
     @api_data = 'data from the api'
   end
   
-  describe "start" do
+  describe "store=" do
     before :each do
       APICache.store = nil
     end
 
     it "should use APICache::MemoryStore by default" do
-      APICache.start
       APICache.store.should be_kind_of(APICache::MemoryStore)
     end
 
     it "should allow instances of APICache::AbstractStore to be passed" do
-      APICache.start(APICache::MemoryStore.new)
+      APICache.store = APICache::MemoryStore.new
       APICache.store.should be_kind_of(APICache::MemoryStore)
     end
 
     it "should allow moneta instances to be passed" do
       require 'moneta'
       require 'moneta/memory'
-      APICache.start(Moneta::Memory.new)
+      APICache.store = Moneta::Memory.new
       APICache.store.should be_kind_of(APICache::MonetaStore)
     end
 
     it "should raise an exception if anything else is passed" do
       lambda {
-        APICache.start(Class)
+        APICache.store = Class
       }.should raise_error(ArgumentError, 'Please supply an instance of either a moneta store or a subclass of APICache::AbstractStore')
     end
 
     after :all do
       APICache.store = nil
-      APICache.start
     end
   end
 

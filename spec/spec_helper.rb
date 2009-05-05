@@ -4,5 +4,4 @@ require "rubygems"
 require "api_cache"
 require "spec"
 
-APICache.start
 APICache.logger.level = Logger::FATAL
