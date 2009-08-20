@@ -29,7 +29,7 @@ You get the following functionality for free:
 * If the twitter API dies then keep using the last data received for a day. Then assume it's invalid and announce that Twitter has FAILED (optional).
 * Don't hit the rate limit (70 requests per 60 minutes)
 
-So what exactly does <tt>APICache</tt> do? Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the Twitter API. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, it raises an <tt>APICache::NotAvailableError</tt> exception. You're responsible for catching this exception and complaining bitterly to the internet.
+So what exactly does <tt>APICache</tt> do? Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the Twitter API. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, it raises an exception which you're responsible for catching (and complaining bitterly to the internet if that's your thing).
 
 All very simple. What if you need to do something more complicated? Say you need authentication or the silly API you're using doesn't follow a nice convention of returning 2xx for success. Then you need a block:
 
@@ -48,7 +48,7 @@ All very simple. What if you need to do something more complicated? Say you need
       end
     end
 
-All the caching is still handled for you. If you supply a block then the first argument to <tt>APICache.get</tt> is assumed to be a unique key rather than a URL. Throwing <tt>APICache::InvalidResponse</tt> signals to <tt>APICache</tt> that the request was not successful.
+All the caching is still handled for you. If you supply a block then the first argument to <tt>APICache.get</tt> is assumed to be a unique key rather than a URL. Throwing any exception signals to <tt>APICache</tt> that the request was not successful, should not be cached, and a cached value should be returned if available.
 
 You can send any of the following options to <tt>APICache.get(url, options = {}, &block)</tt>. These are the default values (times are all in seconds):
 
@@ -64,8 +64,6 @@ Before using the APICache you should set the cache to use. By default an in memo
 
     require 'moneta/memcache'
     APICache.store = Moneta::Memcache.new(:server => "localhost")
-
-I suppose you'll want to get your hands on this magic! Just take a look at the instructions above for the impatient. Well done for reading this first!
 
 Please send feedback to me [at] mloughran [dot] com if you think of any other functionality that would be handy.
 
