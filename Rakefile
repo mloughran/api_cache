@@ -4,9 +4,9 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "api_cache"
-    s.summary = %Q{Library to handle caching external API calls}
+    s.summary = %Q{API Cache allows advanced caching of APIs}
     s.email = "me@mloughran.com"
-    s.homepage = "http://github.com/mloughran/api_cache"
+    s.homepage = "http://mloughran.github.com/api_cache/"
     s.description = "Library to handle caching external API calls"
     s.authors = ["Martyn Loughran"]
   end
