@@ -1,11 +1,11 @@
 require 'logger'
 
 # Contains the complete public API for APICache.
-# 
+#
 # See APICache.get method and the README file.
-# 
-# Before using APICache you should set the store to use using 
-# APICache.store=. For convenience, when no store is set an in memory store 
+#
+# Before using APICache you should set the store to use using
+# APICache.store=. For convenience, when no store is set an in memory store
 # will be used (and a warning will be logged).
 #
 class APICache
@@ -24,25 +24,25 @@ class APICache
         log
       end
     end
-    
-    # Set the logger to use. If not set, <tt>Logger.new(STDOUT)</tt> will be 
+
+    # Set the logger to use. If not set, <tt>Logger.new(STDOUT)</tt> will be
     # used.
-    # 
+    #
     def logger=(logger)
       @logger = logger
     end
-    
+
     def store # :nodoc:
       @store ||= begin
         APICache.logger.warn("Using in memory store")
         APICache::MemoryStore.new
       end
     end
-    
-    # Set the cache store to use. This should either be an instance of a 
-    # moneta store or a subclass of APICache::AbstractStore. Moneta is 
+
+    # Set the cache store to use. This should either be an instance of a
+    # moneta store or a subclass of APICache::AbstractStore. Moneta is
     # recommended.
-    # 
+    #
     def store=(store)
       @store = begin
         if store.class < APICache::AbstractStore
