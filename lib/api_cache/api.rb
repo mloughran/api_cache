@@ -56,7 +56,7 @@ class APICache
         # 2xx response code
         response.body
       else
-        raise APICache::Invalid, "Invalid http response: #{response.code}"
+        raise APICache::InvalidResponse, "InvalidResponse http response: #{response.code}"
       end
     end
 

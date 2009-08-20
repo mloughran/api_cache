@@ -9,9 +9,10 @@ require 'logger'
 # will be used (and a warning will be logged).
 #
 class APICache
-  class NotAvailableError < RuntimeError; end
-  class Invalid <  RuntimeError; end
-  class CannotFetch < RuntimeError; end
+  class APICacheError < RuntimeError; end
+  class NotAvailableError < APICacheError; end
+  class InvalidResponse <  APICacheError; end
+  class CannotFetch < APICacheError; end
 
   class << self
     attr_accessor :logger

@@ -43,12 +43,12 @@ All very simple. What if you need to do something more complicated? Say you need
           # 2xx response code
           response.body
         else
-          raise APICache::Invalid
+          raise APICache::InvalidResponse
         end
       end
     end
 
-All the caching is still handled for you. If you supply a block then the first argument to <tt>APICache.get</tt> is assumed to be a unique key rather than a URL. Throwing <tt>APICache::Invalid</tt> signals to <tt>APICache</tt> that the request was not successful.
+All the caching is still handled for you. If you supply a block then the first argument to <tt>APICache.get</tt> is assumed to be a unique key rather than a URL. Throwing <tt>APICache::InvalidResponse</tt> signals to <tt>APICache</tt> that the request was not successful.
 
 You can send any of the following options to <tt>APICache.get(url, options = {}, &block)</tt>. These are the default values (times are all in seconds):
 
