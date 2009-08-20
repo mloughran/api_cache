@@ -9,6 +9,8 @@ begin
     s.homepage = "http://mloughran.github.com/api_cache/"
     s.description = "Library to handle caching external API calls"
     s.authors = ["Martyn Loughran"]
+    s.add_development_dependency("rspec")
+    s.add_development_dependency("fakeweb")
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
