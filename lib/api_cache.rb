@@ -10,7 +10,6 @@ require 'logger'
 #
 class APICache
   class APICacheError < RuntimeError; end
-  class NotAvailableError < APICacheError; end
   class InvalidResponse <  APICacheError; end
   class CannotFetch < APICacheError; end
 
@@ -59,9 +58,6 @@ class APICache
     end
   end
 
-  # Raises an APICache::NotAvailableError if it can't get a value. You should
-  # rescue this if your application code.
-  #
   # Optionally call with a block. The value of the block is then used to
   # set the cache rather than calling the url. Use it for example if you need
   # to make another type of request, catch custom error codes etc. To signal
