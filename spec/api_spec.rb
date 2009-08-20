@@ -52,5 +52,14 @@ describe APICache::API do
       api.get.should == 42
     end
 
+    it "should return the raised exception if the block raises one" do
+      api = APICache::API.new('foobar', @options) do
+        raise RuntimeError, 'foo'
+      end
+      lambda {
+        api.get
+      }.should raise_error(StandardError, 'foo')
+    end
+
   end
 end

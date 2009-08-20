@@ -65,9 +65,13 @@ class APICache
   # Optionally call with a block. The value of the block is then used to
   # set the cache rather than calling the url. Use it for example if you need
   # to make another type of request, catch custom error codes etc. To signal
-  # that the call failed just raise APICache::Invalid - the value will then
+  # that the call failed just raise any exception - the value will then
   # not be cached and the api will not be called again for options[:timeout]
-  # seconds. If an old value is available in the cache then it will be used.
+  # seconds. If an old value is available in the cache then it will be
+  # returned.
+  #
+  # An exception will be raised if the API cannot be fetched and the request
+  # cannot be served by the cache.
   #
   # For example:
   #   APICache.get("http://twitter.com/statuses/user_timeline/6869822.atom")
@@ -104,14 +108,17 @@ class APICache
         value = api.get
         cache.set(value)
         value
-      rescue APICache::CannotFetch => e
-        APICache.logger.info "Failed to fetch new data from API because " \
+      rescue => e
+        APICache.logger.info "Failed to fetch from API - Exception: " \
           "#{e.class}: #{e.message}"
+        # No point outputting backgraces for internal APICache errors
+        APICache.logger.debug "Backtrace:\n#{e.backtrace.join("\n")}" unless e.kind_of?(APICacheError)
+
         if cache_state == :refetch
           cache.get
         else
-          APICache.logger.warn "Data not available in the cache or from API"
-          raise APICache::NotAvailableError, e.message
+          APICache.logger.warn "Data not available in the cache or from API for key #{@key}"
+          raise e
         end
       end
     end
