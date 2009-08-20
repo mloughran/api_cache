@@ -29,7 +29,13 @@ You get the following functionality for free:
 * If the twitter API dies then keep using the last data received for a day. Then assume it's invalid and announce that Twitter has FAILED (optional).
 * Don't hit the rate limit (70 requests per 60 minutes)
 
-So what exactly does <tt>APICache</tt> do? Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the Twitter API. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, it raises an exception which you're responsible for catching (and complaining bitterly to the internet if that's your thing).
+So what exactly does <tt>APICache</tt> do? Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the Twitter API. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, a subclass of <tt>APICache::APICacheError</tt> is raised which you're responsible for catching. So assuming that you don't care whether it was a timeout error or an invalid response you could just do:
+
+    begin
+      APICache.get("http://twitter.com/statuses/public_timeline.rss")
+    rescue APICache::APICacheError
+      "Fail Whale"
+    end
 
 All very simple. What if you need to do something more complicated? Say you need authentication or the silly API you're using doesn't follow a nice convention of returning 2xx for success. Then you need a block:
 

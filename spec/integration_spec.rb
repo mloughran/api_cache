@@ -34,4 +34,22 @@ describe "api_cache" do
       end
     }.should_not raise_error
   end
+
+  it "should raise APICache::TimeoutError if the API call times out unless data available in cache" do
+    lambda {
+      APICache.get('foo', :timeout => 1) do
+        sleep 1.1
+      end
+    }.should raise_error APICache::TimeoutError, 'Timed out when calling API (timeout 1s)'
+
+    APICache.get('foo', :period => 0) do
+      'bar'
+    end
+
+    lambda {
+      APICache.get('foo', :timeout => 1) do
+        sleep 1.1
+      end
+    }.should_not raise_error
+  end
 end

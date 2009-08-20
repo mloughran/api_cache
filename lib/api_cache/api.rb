@@ -43,6 +43,8 @@ class APICache
           get_key_via_http
         end
       end
+    rescue Timeout::Error => e
+      raise APICache::TimeoutError, "Timed out when calling API (timeout #{@timeout}s)"
     end
 
     private

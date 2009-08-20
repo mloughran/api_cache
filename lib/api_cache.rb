@@ -10,6 +10,7 @@ require 'logger'
 #
 class APICache
   class APICacheError < RuntimeError; end
+  class TimeoutError < APICacheError; end
   class InvalidResponse <  APICacheError; end
   class CannotFetch < APICacheError; end
 
