@@ -2,6 +2,10 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe APICache::API do
   before :each do
+    FakeWeb.register_uri(:get, "http://www.google.com/", :body => "Google")
+    FakeWeb.register_uri(:get, "http://froogle.google.com/", :status => 302, :location => "http://products.google.com")
+    FakeWeb.register_uri(:get, "http://products.google.com/", :body => "Google Product Search")
+
     @options = {
       :period => 1,
       :timeout => 5
@@ -42,7 +46,7 @@ describe APICache::API do
   describe "with a block" do
 
     it "should return the return value of the block" do
-      api = APICache::API.new('http://froogle.google.com/', @options) do
+      api = APICache::API.new('http://www.google.com/', @options) do
         42
       end
       api.get.should == 42
