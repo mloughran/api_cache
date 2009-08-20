@@ -28,8 +28,8 @@ class APICache
     # be queried expecting a 200 response. Otherwise the return value of the
     # block will be used.
     #
-    # If the block is unable to fetch the value from the API it should raise
-    # APICache::Invalid.
+    # This method can raise Timeout::Error, APICache::InvalidResponse, or any
+    # exception raised in the block passed to APICache.get
     #
     def get
       check_queryable!
@@ -37,14 +37,14 @@ class APICache
       set_queried_at
       Timeout::timeout(@timeout) do
         if @block
-          # This should raise APICache::Invalid if it is not correct
+          # If this call raises an error then the response is not cached
           @block.call
         else
           get_key_via_http
         end
       end
-    rescue Timeout::Error, APICache::Invalid => e
-      raise APICache::CannotFetch, e.message
+    rescue Timeout::Error => e
+      raise APICache::TimeoutError, "Timed out when calling API (timeout #{@timeout}s)"
     end
 
     private
@@ -56,7 +56,7 @@ class APICache
         # 2xx response code
         response.body
       else
-        raise APICache::Invalid, "Invalid http response: #{response.code}"
+        raise APICache::InvalidResponse, "InvalidResponse http response: #{response.code}"
       end
     end
 

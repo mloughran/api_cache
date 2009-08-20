@@ -74,13 +74,13 @@ describe APICache do
       APICache.get(@key).should == @api_data
     end
     
-    it "should raise NotAvailableError if the api cannot fetch data and state is :invalid" do
+    it "should raise CannotFetch if the api cannot fetch data and the cache state is :invalid" do
       @cache.stub!(:state).and_return(:invalid)
       @api.should_receive(:get).with.and_raise(APICache::CannotFetch)
       
       lambda {
         APICache.get(@key).should
-      }.should raise_error(APICache::NotAvailableError)
+      }.should raise_error(APICache::CannotFetch)
     end
     
     it "should make new request to API if the state is :missing" do
@@ -89,13 +89,13 @@ describe APICache do
       APICache.get(@key).should == @api_data
     end
     
-    it "should raise an exception if the api cannot fetch data and state is :missing" do
+    it "should raise an exception if the api cannot fetch data and the cache state is :missing" do
       @cache.stub!(:state).and_return(:missing)
       @api.should_receive(:get).with.and_raise(APICache::CannotFetch)
       
       lambda {
         APICache.get(@key).should
-      }.should raise_error(APICache::NotAvailableError)
+      }.should raise_error(APICache::CannotFetch)
     end
   end
 end
