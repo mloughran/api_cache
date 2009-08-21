@@ -1,13 +1,14 @@
 = APICache (aka api_cache)
 
+APICache allows any API client library to be easily wrapped with a robust caching layer. It supports caching (obviously), serving stale data and limits on the number of API calls. It's also got a handy syntax if all you want to do is cache a bothersome url.
+
 == For the impatient
 
     # Install
-    sudo gem install mloughran-api_cache -s http://gems.github.com
+    sudo gem install api_cache -s http://gemcutter.org
     
     # Require
     require 'rubygems'
-    gem 'mloughran-api_cache'
     require 'api_cache'
     
     # Use
@@ -16,20 +17,28 @@
     # Use a proper store
     require 'moneta/memcache'
     APICache.store = Moneta::Memcache.new(:server => "localhost")
+    
+    # Wrap an API, and handle the failure case
+    
+    APICache.get("my_albums", :fail => []) do
+      FlickrRb.get_all_sets
+    end
 
-== For everyone else
+== The longer version
 
-You want to use the Twitter API but you don't want to die? I have the solution to API caching:
+You want to use the Twitter API but you don't want to die?
 
     APICache.get("http://twitter.com/statuses/public_timeline.rss")
 
-You get the following functionality for free:
+This works better than a standard HTTP get because you get the following functionality for free:
 
-* New data every 10 minutes
-* If the twitter API dies then keep using the last data received for a day. Then assume it's invalid and announce that Twitter has FAILED (optional).
-* Don't hit the rate limit (70 requests per 60 minutes)
+* Cached response returned for 10 minutes
+* Stale response returned for a day if twitter is down
+* Limited to attempt a connection at most once a minute
 
-So what exactly does <tt>APICache</tt> do? Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the Twitter API. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, a subclass of <tt>APICache::APICacheError</tt> is raised which you're responsible for catching. So assuming that you don't care whether it was a timeout error or an invalid response you could just do:
+To understand what <tt>APICache</tt> does here's an example: Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the supplied url. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, a subclass of <tt>APICache::APICacheError</tt> is raised which you're responsible for rescuing.
+
+Assuming that you don't care whether it was a timeout error or an invalid response (for example) you could do this:
 
     begin
       APICache.get("http://twitter.com/statuses/public_timeline.rss")
@@ -37,7 +46,13 @@ So what exactly does <tt>APICache</tt> do? Given cached data less than 10 minute
       "Fail Whale"
     end
 
-All very simple. What if you need to do something more complicated? Say you need authentication or the silly API you're using doesn't follow a nice convention of returning 2xx for success. Then you need a block:
+However there's an easier way if you don't care exactly why the API call failed. You can just pass the :fail parameter (procs are accepted too) and all exceptions will be rescued for you. So this is exactly equivalent:
+
+    APICache.get("http://twitter.com/statuses/public_timeline.rss", {
+      :fail => "Fail Whale"
+    })
+
+The real value however is not caching HTTP calls, but allowing caching functionality to be easily added to existing API client gems, or in fact any arbitrary code which is either slow or not guaranteed to succeed every time.
 
     APICache.get('twitter_replies', :cache => 3600) do
       Net::HTTP.start('twitter.com') do |http|
@@ -54,7 +69,7 @@ All very simple. What if you need to do something more complicated? Say you need
       end
     end
 
-All the caching is still handled for you. If you supply a block then the first argument to <tt>APICache.get</tt> is assumed to be a unique key rather than a URL. Throwing any exception signals to <tt>APICache</tt> that the request was not successful, should not be cached, and a cached value should be returned if available.
+The first argument to <tt>APICache.get</tt> is now assumed to be a unique key rather than a URL. As you'd expect, the block will only be called if the request cannot be fulfilled by the cache. Throwing any exception signals to <tt>APICache</tt> that the request was not successful, should not be cached, and a cached value should be returned if available. If a cached value is not available then the exception will be re-raised for you to handle.
 
 You can send any of the following options to <tt>APICache.get(url, options = {}, &block)</tt>. These are the default values (times are all in seconds):
 
@@ -64,6 +79,7 @@ You can send any of the following options to <tt>APICache.get(url, options = {},
                         #             :forever is a valid option
       :period => 60,    # 1 minute    Maximum frequency to call API
       :timeout => 5     # 5 seconds   API response timeout
+      :fail =>          # Value returned instead of exception on failure
     }
 
 Before using the APICache you should set the cache to use. By default an in memory hash is used - obviously not a great idea. Thankfully APICache can use any moneta store, so for example if you wanted to use memcache you'd do this:
@@ -71,7 +87,7 @@ Before using the APICache you should set the cache to use. By default an in memo
     require 'moneta/memcache'
     APICache.store = Moneta::Memcache.new(:server => "localhost")
 
-Please send feedback to me [at] mloughran [dot] com if you think of any other functionality that would be handy.
+Please be liberal with the github issue tracker, more so with pull requests, or drop me a mail to me [at] mloughran [dot] com. I'd love to hear from you.
 
 == Copyright
 

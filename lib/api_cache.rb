@@ -68,7 +68,8 @@ class APICache
   # returned.
   #
   # An exception will be raised if the API cannot be fetched and the request
-  # cannot be served by the cache.
+  # cannot be served by the cache. This will either be a subclass of
+  # APICache::Error or an exception raised by the provided block.
   #
   # For example:
   #   APICache.get("http://twitter.com/statuses/user_timeline/6869822.atom")
