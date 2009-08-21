@@ -115,7 +115,12 @@ class APICache
           cache.get
         else
           APICache.logger.warn "Data not available in the cache or from API for key #{@key}"
-          raise e
+          if options.has_key?(:fail)
+            fail = options[:fail]
+            fail.respond_to?(:call) ? fail.call : fail
+          else
+            raise e
+          end
         end
       end
     end

@@ -52,4 +52,22 @@ describe "api_cache" do
       end
     }.should_not raise_error
   end
+
+  it "should return a default value rather than raising an exception if :fail passed" do
+    APICache.get('foo', :fail => "bar") do
+      raise 'foo'
+    end.should == 'bar'
+  end
+
+  it "should accept a proc to fail" do
+    APICache.get('foo', :fail => lambda { "bar" }) do
+      raise 'foo'
+    end.should == 'bar'
+  end
+
+  it "should accept nil values for :fail" do
+    APICache.get('foo', :fail => nil) do
+      raise 'foo'
+    end.should == nil
+  end
 end
