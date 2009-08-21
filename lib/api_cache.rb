@@ -10,9 +10,10 @@ require 'logger'
 #
 class APICache
   class APICacheError < RuntimeError; end
-  class TimeoutError < APICacheError; end
-  class InvalidResponse <  APICacheError; end
-  class CannotFetch < APICacheError; end
+  class NotAvailableError < APICacheError; end
+  class TimeoutError < NotAvailableError; end
+  class InvalidResponse <  NotAvailableError; end
+  class CannotFetch < NotAvailableError; end
 
   class << self
     attr_accessor :logger
