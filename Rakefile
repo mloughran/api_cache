@@ -7,7 +7,7 @@ begin
     s.summary = %Q{API Cache allows advanced caching of APIs}
     s.email = "me@mloughran.com"
     s.homepage = "http://mloughran.github.com/api_cache/"
-    s.description = "Library to handle caching external API calls"
+    s.description = "APICache allows any API client library to be easily wrapped with a robust caching layer. It supports caching (obviously), serving stale data and limits on the number of API calls. It's also got a handy syntax if all you want to do is cache a bothersome url."
     s.authors = ["Martyn Loughran"]
     s.add_development_dependency("rspec")
     s.add_development_dependency("fakeweb")
