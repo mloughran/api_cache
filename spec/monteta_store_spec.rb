@@ -1,10 +1,13 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-require 'moneta/memcache'
+require 'moneta'
+require 'moneta/adapters/memcache'
 
 describe APICache::MonetaStore do
   before :each do
-    @moneta = Moneta::Memcache.new(:server => "localhost")
+    @moneta = Moneta::Builder.build do
+      run Moneta::Adapters::Memcache, :server => "localhost"
+    end
     @moneta.delete('foo')
     @store = APICache::MonetaStore.new(@moneta)
   end

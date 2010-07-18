@@ -23,8 +23,10 @@ describe APICache do
 
     it "should allow moneta instances to be passed" do
       require 'moneta'
-      require 'moneta/memory'
-      APICache.store = Moneta::Memory.new
+      require 'moneta/adapters/memory'
+      APICache.store = Moneta::Builder.build do
+        run Moneta::Adapters::Memory
+      end
       APICache.store.should be_kind_of(APICache::MonetaStore)
     end
 
