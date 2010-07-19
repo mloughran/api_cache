@@ -89,6 +89,15 @@ Before using the APICache you should set the cache to use. By default an in memo
 
 Please be liberal with the github issue tracker, more so with pull requests, or drop me a mail to me [at] mloughran [dot] com. I'd love to hear from you.
 
+== Contributing
+
+There is a Gemfile to make running the specs easy:
+
+    bundle install
+    bundle exec rake
+
+Code, write specs, send pull request, easy as pie. Thanks!
+
 == Copyright
 
 Copyright (c) 2008 Martyn Loughran. See LICENSE for details.

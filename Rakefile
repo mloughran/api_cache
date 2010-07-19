@@ -37,4 +37,4 @@ Spec::Rake::SpecTask.new(:rcov) do |t|
   t.rcov = true
 end
 
-task :default => :test
+task :default => :spec
