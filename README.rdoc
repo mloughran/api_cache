@@ -15,6 +15,7 @@ APICache allows any API client library to be easily wrapped with a robust cachin
     APICache.get("http://twitter.com/statuses/public_timeline.rss")
     
     # Use a proper store
+    require 'moneta'
     require 'moneta/memcache'
     APICache.store = Moneta::Memcache.new(:server => "localhost")
     

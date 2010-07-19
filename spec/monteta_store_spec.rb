@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
+require 'moneta'
 require 'moneta/memcache'
 
 describe APICache::MonetaStore do
