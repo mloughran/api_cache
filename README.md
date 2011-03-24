@@ -101,4 +101,4 @@ Code, write specs, send pull request, easy as pie. Thanks!
 
 ## Copyright
 
-Copyright (c) 2008 Martyn Loughran. See LICENSE for details.
+Copyright (c) 2008-2011 Martyn Loughran. See LICENSE for details.
