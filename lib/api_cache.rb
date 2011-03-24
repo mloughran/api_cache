@@ -133,6 +133,7 @@ require 'api_cache/cache'
 require 'api_cache/api'
 
 APICache.autoload 'AbstractStore', 'api_cache/abstract_store'
+APICache.autoload 'DalliStore', 'api_cache/dalli_store'
 APICache.autoload 'MemoryStore', 'api_cache/memory_store'
 APICache.autoload 'MonetaStore', 'api_cache/moneta_store'
 APICache.autoload 'NullStore', 'api_cache/null_store'

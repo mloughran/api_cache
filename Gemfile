@@ -8,5 +8,6 @@ gem "rspec"
 gem "jeweler"
 gem "fakeweb"
 
+gem 'dali'
 gem "moneta"
 gem "memcache-client"
