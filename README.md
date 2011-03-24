@@ -25,6 +25,15 @@ APICache allows any API client library to be easily wrapped with a robust cachin
       FlickrRb.get_all_sets
     end
 
+## Heroku + memcache
+
+Heroku memcache add-on users can use APICache with the [Dalli](https://github.com/mperham/dalli) gem, no manual configuration is required as Dalli automatically picks up the appropriate environment variables.
+
+    require 'api_cache'
+    require 'dalli'
+
+    APICache.store = APICache::DalliStore.new(Dalli::Client.new)
+
 ## The longer version
 
 You want to use the Twitter API but you don't want to die?
