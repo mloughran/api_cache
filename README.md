@@ -1,8 +1,8 @@
-= APICache (aka api_cache)
+# APICache (aka api_cache)
 
 APICache allows any API client library to be easily wrapped with a robust caching layer. It supports caching (obviously), serving stale data and limits on the number of API calls. It's also got a handy syntax if all you want to do is cache a bothersome url.
 
-== For the impatient
+## For the impatient
 
     # Install
     sudo gem install api_cache -s http://gemcutter.org
@@ -25,7 +25,7 @@ APICache allows any API client library to be easily wrapped with a robust cachin
       FlickrRb.get_all_sets
     end
 
-== The longer version
+## The longer version
 
 You want to use the Twitter API but you don't want to die?
 
@@ -37,7 +37,7 @@ This works better than a standard HTTP get because you get the following functio
 * Stale response returned for a day if twitter is down
 * Limited to attempt a connection at most once a minute
 
-To understand what <tt>APICache</tt> does here's an example: Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the supplied url. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, a subclass of <tt>APICache::APICacheError</tt> is raised which you're responsible for rescuing.
+To understand what `APICache` does here's an example: Given cached data less than 10 minutes old, it returns that. Otherwise, assuming it didn't try to request the URL within the last minute (to avoid the rate limit), it makes a get request to the supplied url. If the Twitter API timeouts or doesn't return a 2xx code (very likely) we're still fine: it just returns the last data fetched (as long as it's less than a day old). In the exceptional case that all is lost and no data can be returned, a subclass of `APICache::APICacheError` is raised which you're responsible for rescuing.
 
 Assuming that you don't care whether it was a timeout error or an invalid response (for example) you could do this:
 
@@ -70,9 +70,9 @@ The real value however is not caching HTTP calls, but allowing caching functiona
       end
     end
 
-The first argument to <tt>APICache.get</tt> is now assumed to be a unique key rather than a URL. As you'd expect, the block will only be called if the request cannot be fulfilled by the cache. Throwing any exception signals to <tt>APICache</tt> that the request was not successful, should not be cached, and a cached value should be returned if available. If a cached value is not available then the exception will be re-raised for you to handle.
+The first argument to `APICache.get` is now assumed to be a unique key rather than a URL. As you'd expect, the block will only be called if the request cannot be fulfilled by the cache. Throwing any exception signals to `APICache` that the request was not successful, should not be cached, and a cached value should be returned if available. If a cached value is not available then the exception will be re-raised for you to handle.
 
-You can send any of the following options to <tt>APICache.get(url, options = {}, &block)</tt>. These are the default values (times are all in seconds):
+You can send any of the following options to `APICache.get(url, options = {}, &block)`. These are the default values (times are all in seconds):
 
     {
       :cache => 600,    # 10 minutes  After this time fetch new data
@@ -90,7 +90,7 @@ Before using the APICache you should set the cache to use. By default an in memo
 
 Please be liberal with the github issue tracker, more so with pull requests, or drop me a mail to me [at] mloughran [dot] com. I'd love to hear from you.
 
-== Contributing
+## Contributing
 
 There is a Gemfile to make running the specs easy:
 
@@ -99,6 +99,6 @@ There is a Gemfile to make running the specs easy:
 
 Code, write specs, send pull request, easy as pie. Thanks!
 
-== Copyright
+## Copyright
 
 Copyright (c) 2008 Martyn Loughran. See LICENSE for details.
