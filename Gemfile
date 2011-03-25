@@ -1,13 +1,4 @@
-# This gemfile is designed to allow easily setting up testing dependencies, 
-# not for runtime depenencies (which are handled by rubygems)
-
 source "http://rubygems.org"
 
-gem "rake"
-gem "rspec"
-gem "jeweler"
-gem "fakeweb"
-
-gem 'dali'
-gem "moneta"
-gem "memcache-client"
+# Specify your gem's dependencies in api_cache.gemspec
+gemspec
