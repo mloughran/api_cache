@@ -101,6 +101,7 @@ class APICache
     cache_state = cache.state
 
     if cache_state == :current
+      APICache.logger.debug "APICache #{@key}: Returning from cache"
       cache.get
     else
       begin
@@ -108,15 +109,15 @@ class APICache
         cache.set(value)
         value
       rescue => e
-        APICache.logger.info "Failed to fetch from API - Exception: " \
-          "#{e.class}: #{e.message}"
+        APICache.logger.info "APICache #{@key}: Exception raised (#{e.message} - #{e.class})" \
+
         # No point outputting backgraces for internal APICache errors
         APICache.logger.debug "Backtrace:\n#{e.backtrace.join("\n")}" unless e.kind_of?(APICacheError)
 
         if cache_state == :refetch
           cache.get
         else
-          APICache.logger.warn "Data not available in the cache or from API for key #{@key}"
+          APICache.logger.warn "APICache #{@key}: Data not available in the cache or from API"
           if options.has_key?(:fail)
             fail = options[:fail]
             fail.respond_to?(:call) ? fail.call : fail

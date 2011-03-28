@@ -33,7 +33,7 @@ class APICache
     #
     def get
       check_queryable!
-      APICache.logger.debug "Fetching data from the API"
+      APICache.logger.debug "APICache #{@key}: Calling API"
       set_queried_at
       Timeout::timeout(@timeout) do
         if @block
@@ -44,7 +44,7 @@ class APICache
         end
       end
     rescue Timeout::Error => e
-      raise APICache::TimeoutError, "Timed out when calling API (timeout #{@timeout}s)"
+      raise APICache::TimeoutError, "APICache #{@key}: Request timed out (timeout #{@timeout}s)"
     end
 
     private
@@ -56,12 +56,12 @@ class APICache
         # 2xx response code
         response.body
       else
-        raise APICache::InvalidResponse, "InvalidResponse http response: #{response.code}"
+        raise APICache::InvalidResponse, "APICache #{@key}: InvalidResponse http response: #{response.code}"
       end
     rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
            Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError,
            Net::ProtocolError, Errno::ECONNREFUSED, SocketError => e
-      raise APICache::InvalidResponse, "Net::HTTP error (#{e.message} - #{e.class})"
+      raise APICache::InvalidResponse, "APICache #{@key}: Net::HTTP error (#{e.message} - #{e.class})"
     end
 
     def redirecting_get(url)
@@ -75,14 +75,14 @@ class APICache
     def check_queryable!
       if previously_queried?
         if Time.now - queried_at > @period
-          APICache.logger.debug "Queryable: true - retry_time has passed"
+          APICache.logger.debug "APICache #{@key}: Is queryable - retry_time has passed"
         else
-          APICache.logger.debug "Queryable: false - queried too recently"
+          APICache.logger.debug "APICache #{@key}: Not queryable - queried too recently"
           raise APICache::CannotFetch,
             "Cannot fetch #{@key}: queried too recently"
         end
       else
-        APICache.logger.debug "Queryable: true - never used API before"
+        APICache.logger.debug "APICache #{@key}: Is queryable - first query"
       end
     end
 

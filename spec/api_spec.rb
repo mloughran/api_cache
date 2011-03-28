@@ -46,7 +46,7 @@ describe APICache::API do
       api = APICache::API.new('http://example.com/', @options)
       lambda {
         api.get
-      }.should raise_error(APICache::InvalidResponse, "Net::HTTP error (Connection refused - Exception from WebMock - Errno::ECONNREFUSED")
+      }.should raise_error(APICache::InvalidResponse, "APICache http://example.com/: Net::HTTP error (Connection refused - Exception from WebMock - Errno::ECONNREFUSED)")
     end
 
   end

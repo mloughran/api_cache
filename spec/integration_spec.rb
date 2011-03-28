@@ -40,7 +40,7 @@ describe "api_cache" do
       APICache.get('foo', :timeout => 1) do
         sleep 1.1
       end
-    }.should raise_error APICache::TimeoutError, 'Timed out when calling API (timeout 1s)'
+    }.should raise_error APICache::TimeoutError, 'APICache foo: Request timed out (timeout 1s)'
 
     APICache.get('foo', :period => 0) do
       'bar'
