@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_development_dependency('rspec', "~> 1.0")
-  s.add_development_dependency('fakeweb')
+  s.add_development_dependency('webmock')
   s.add_development_dependency('rake')
   s.add_development_dependency('moneta', "~> 0.6.0")
   s.add_development_dependency('dalli')

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "api_cache" do
   before :each do
-    FakeWeb.register_uri(:get, "http://www.google.com/", :body => "Google")
+    stub_request(:get, "http://www.google.com/").to_return(:body => "Google")
 
     APICache.store = nil
   end

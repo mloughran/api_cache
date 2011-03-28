@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe APICache::API do
   before :each do
-    FakeWeb.register_uri(:get, "http://www.google.com/", :body => "Google")
-    FakeWeb.register_uri(:get, "http://froogle.google.com/", :status => 302, :location => "http://products.google.com")
-    FakeWeb.register_uri(:get, "http://products.google.com/", :body => "Google Product Search")
+    stub_request(:get, "http://www.google.com/").to_return(:body => "Google")
+    stub_request(:get, "http://froogle.google.com/").to_return(:status => 302, :headers => {:location => "http://products.google.com"})
+    stub_request(:get, "http://products.google.com/").to_return(:body => "Google Product Search")
 
     @options = {
       :period => 1,

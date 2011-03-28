@@ -1,5 +1,5 @@
 require "spec"
-require "fakeweb"
+require 'webmock/rspec'
 
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 require "api_cache"
