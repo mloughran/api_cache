@@ -41,6 +41,14 @@ describe APICache::API do
       api.get.should =~ /Google Product Search/
     end
 
+    it "should rescue errors thrown by Net::HTTP and raise APICache::InvalidResponse" do
+      stub_request(:get, "http://example.com/").to_raise(Errno::ECONNREFUSED)
+      api = APICache::API.new('http://example.com/', @options)
+      lambda {
+        api.get
+      }.should raise_error(APICache::InvalidResponse, "Net::HTTP error (Connection refused - Exception from WebMock - Errno::ECONNREFUSED")
+    end
+
   end
 
   describe "with a block" do

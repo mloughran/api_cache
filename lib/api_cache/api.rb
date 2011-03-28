@@ -58,6 +58,10 @@ class APICache
       else
         raise APICache::InvalidResponse, "InvalidResponse http response: #{response.code}"
       end
+    rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
+           Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError,
+           Net::ProtocolError, Errno::ECONNREFUSED, SocketError => e
+      raise APICache::InvalidResponse, "Net::HTTP error (#{e.message} - #{e.class})"
     end
 
     def redirecting_get(url)
