@@ -16,6 +16,11 @@ class APICache
       @moneta[key]
     end
 
+    # Delete value.
+    def delete(key)
+      @moneta.delete(key)
+    end
+
     # Does a given key exist in the cache?
     def exists?(key)
       @moneta.key?(key)

@@ -28,4 +28,15 @@ describe APICache::MonetaStore do
     sleep 1
     @store.expired?('foo', 1).should be_true
   end
+
+  context "after delete" do
+
+    it "should no longer exist" do
+      @store.set("key", "value")
+      @store.delete("key")
+      @store.exists?("key").should be_false
+    end
+
+  end
+
 end

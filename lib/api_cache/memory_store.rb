@@ -18,6 +18,10 @@ class APICache
       data
     end
 
+    def delete(key)
+      @cache.delete(key)
+    end
+
     def exists?(key)
       !@cache[key].nil?
     end

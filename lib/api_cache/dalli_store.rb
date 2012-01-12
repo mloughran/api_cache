@@ -16,6 +16,11 @@ class APICache
       @dalli.get(key)
     end
 
+    # Delete value.
+    def delete(key)
+      @dalli.delete(key)
+    end
+
     # Does a given key exist in the cache?
     def exists?(key)
       !get(key).nil?
