@@ -128,6 +128,13 @@ class APICache
       end
     end
   end
+
+  # Manually delete data from the cache.
+  #
+  def self.delete(key)
+    APICache::Cache.new(key, {}).delete
+  end
+
 end
 
 require 'api_cache/cache'
