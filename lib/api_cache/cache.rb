@@ -47,6 +47,10 @@ class APICache
       true
     end
 
+    def delete
+      store.delete(hash)
+    end
+
     private
 
     def hash

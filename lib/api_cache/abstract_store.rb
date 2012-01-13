@@ -14,6 +14,11 @@ class APICache
       raise "Method not implemented. Called abstract class."
     end
 
+    # Delete value.
+    def delete(key)
+      raise "Method not implemented. Called abstract class."
+    end
+
     # Does a given key exist in the cache?
     def exists?(key)
       raise "Method not implemented. Called abstract class."

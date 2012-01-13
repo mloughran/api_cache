@@ -13,6 +13,9 @@ class APICache
       true
     end
 
+    def delete(key)
+    end
+
     def expired?(key, timeout)
       true
     end

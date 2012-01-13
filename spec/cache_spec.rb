@@ -33,4 +33,10 @@ describe APICache::Cache do
     sleep 1
     cache.state.should == :invalid
   end
+
+  it "should initially have invalid state" do
+    cache = APICache::Cache.new('foo', @options)
+    cache.state.should == :invalid
+  end
+
 end
