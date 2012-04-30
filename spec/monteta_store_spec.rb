@@ -29,6 +29,15 @@ describe APICache::MonetaStore do
     @store.expired?('foo', 1).should be_true
   end
 
+  it "should return false for exists? if created_at key is missing" do
+    @store.set("k", "v")
+    @store.exists?("k").should == true
+
+    @moneta.delete("k_created_at")
+
+    @store.exists?("k").should == false
+  end
+
   context "after delete" do
 
     it "should no longer exist" do
