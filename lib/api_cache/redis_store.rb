@@ -18,7 +18,7 @@ class APICache
 
     # Delete value.
     def delete(key)
-      @redis.set(key, nil)
+      @redis.del(key)
     end
 
     # Does a given key exist in the cache?
