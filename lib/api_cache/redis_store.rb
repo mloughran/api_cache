@@ -30,5 +30,11 @@ class APICache
     def expire(key, seconds)
       @redis.expire(key, seconds)
     end
+
+    # Has a given time passed since the key was set? 
+    def expired?(key, timeout)
+      @redis.ttl(key) <= 0
+    end
+
   end
 end
