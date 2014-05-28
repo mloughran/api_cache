@@ -13,25 +13,26 @@ describe APICache do
     end
 
     it "should use APICache::MemoryStore by default" do
-      APICache.store.should be_kind_of(APICache::MemoryStore)
+      expect(APICache.store).to be_kind_of(APICache::MemoryStore)
     end
 
     it "should allow instances of APICache::AbstractStore to be passed" do
       APICache.store = APICache::MemoryStore.new
-      APICache.store.should be_kind_of(APICache::MemoryStore)
+      expect(APICache.store).to be_kind_of(APICache::MemoryStore)
     end
 
     it "should allow moneta instances to be passed" do
       require 'moneta'
       require 'moneta/memory'
       APICache.store = Moneta::Memory.new
-      APICache.store.should be_kind_of(APICache::MonetaStore)
+      expect(APICache.store).to be_kind_of(APICache::MonetaStore)
     end
 
     it "should raise an exception if anything else is passed" do
-      lambda {
+      expect(lambda {
         APICache.store = Class
-      }.should raise_error(ArgumentError, 'Please supply an instance of either a moneta store or a subclass of APICache::AbstractStore')
+      }).to raise_error(ArgumentError,
+        'Please supply an instance of either a moneta store or a subclass of APICache::AbstractStore')
     end
 
     after :all do
@@ -43,86 +44,80 @@ describe APICache do
 
     context "when cache is mocked" do
       before :each do
-        @api = mock(APICache::API, :get => @api_data)
-        @cache = mock(APICache::Cache, :get => @cache_data, :set => true)
+        @api = instance_double(APICache::API, get: @api_data)
+        @cache = instance_double(APICache::Cache, get: @cache_data, set: true)
 
-        APICache::API.stub!(:new).and_return(@api)
-        APICache::Cache.stub!(:new).and_return(@cache)
+        expect(APICache::API).to receive(:new).and_return(@api)
+        expect(APICache::Cache).to receive(:new).and_return(@cache)
       end
 
       it "should fetch data from the cache if the state is :current" do
-        @cache.stub!(:state).and_return(:current)
+        expect(@cache).to receive(:state).and_return(:current)
 
-        APICache.get(@key).should == @cache_data
+        expect(APICache.get(@key)).to eq(@cache_data)
       end
 
       it "should make new request to API if the state is :refetch and store result in cache" do
-        @cache.stub!(:state).and_return(:refetch)
-        @cache.should_receive(:set).with(@api_data)
+        expect(@cache).to receive(:state).and_return(:refetch)
 
-        APICache.get(@key).should == @api_data
+        expect(APICache.get(@key)).to eq(@api_data)
       end
 
       it "should return the cached value if the state is :refetch but the api is not accessible" do
-        @cache.stub!(:state).and_return(:refetch)
-        @api.should_receive(:get).with.and_raise(APICache::CannotFetch)
+        expect(@cache).to receive(:state).and_return(:refetch)
+        expect(@api).to receive(:get).with(no_args).and_raise(APICache::CannotFetch)
 
-        APICache.get(@key).should == @cache_data
+        expect(APICache.get(@key)).to eq(@cache_data)
       end
 
       it "should make new request to API if the state is :invalid" do
-        @cache.stub!(:state).and_return(:invalid)
+        expect(@cache).to receive(:state).and_return(:invalid)
 
-        APICache.get(@key).should == @api_data
+        expect(APICache.get(@key)).to eq(@api_data)
       end
 
       it "should raise CannotFetch if the api cannot fetch data and the cache state is :invalid" do
-        @cache.stub!(:state).and_return(:invalid)
-        @api.should_receive(:get).with.and_raise(APICache::CannotFetch)
+        expect(@cache).to receive(:state).and_return(:invalid)
+        expect(@api).to receive(:get).with(no_args).and_raise(APICache::CannotFetch)
 
-        lambda {
-          APICache.get(@key).should
-        }.should raise_error(APICache::CannotFetch)
+        expect(lambda {
+          APICache.get(@key)
+        }).to raise_error(APICache::CannotFetch)
       end
 
       it "should make new request to API if the state is :missing" do
-        @cache.stub!(:state).and_return(:missing)
+        expect(@cache).to receive(:state).and_return(:missing)
 
-        APICache.get(@key).should == @api_data
+        expect(APICache.get(@key)).to eq(@api_data)
       end
 
       it "should raise an exception if the api cannot fetch data and the cache state is :missing" do
-        @cache.stub!(:state).and_return(:missing)
-        @api.should_receive(:get).with.and_raise(APICache::CannotFetch)
+        expect(@cache).to receive(:state).and_return(:missing)
+        expect(@api).to receive(:get).with(no_args).and_raise(APICache::CannotFetch)
 
-        lambda {
-          APICache.get(@key).should
-        }.should raise_error(APICache::CannotFetch)
+        expect(lambda {
+          APICache.get(@key)
+        }).to raise_error(APICache::CannotFetch)
       end
     end
 
-
     context "when cache is not mocked" do
-
-      before :each do
+      before(:each) do
         APICache.store = APICache::MemoryStore.new
-        @api = mock(APICache::API, :get => @api_data)
-        APICache::API.stub!(:new).and_return(@api)
+        @api = instance_double(APICache::API, get: @api_data)
+        # APICache::API.stub(:new).and_return(@api)
+        expect(APICache::API).to receive(:new).and_return(@api)
       end
 
-      #it "should initially fetch" do
-      #  @api.should_receive(:get)
-      #  APICache.get(@key)
-      #end
-
       it "should only fetch once" do
-        @api.should_receive(:get).once
+        expect(@api).to receive(:get).once
+        byebug
         APICache.get(@key)
         APICache.get(@key)
       end
 
       it "should refetch if deleted" do
-        @api.should_receive(:get).twice
+        expect(@api).to receive(:get).twice
         APICache.get(@key)
         APICache.delete(@key)
         APICache.get(@key)
