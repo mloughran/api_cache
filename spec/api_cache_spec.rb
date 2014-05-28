@@ -105,13 +105,12 @@ describe APICache do
       before(:each) do
         APICache.store = APICache::MemoryStore.new
         @api = instance_double(APICache::API, get: @api_data)
-        # APICache::API.stub(:new).and_return(@api)
-        expect(APICache::API).to receive(:new).and_return(@api)
+        APICache::API.stub(:new).and_return(@api)
+        # expect(APICache::API).to receive(:new).and_return(@api)
       end
 
       it "should only fetch once" do
         expect(@api).to receive(:get).once
-        byebug
         APICache.get(@key)
         APICache.get(@key)
       end
