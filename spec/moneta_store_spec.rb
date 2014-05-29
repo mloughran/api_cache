@@ -1,11 +1,12 @@
 require 'spec_helper'
-require 'dalli'
+require 'moneta'
+require 'moneta/memcache'
 
-describe APICache::DalliStore do
+describe APICache::MonetaStore do
   before(:each) do
-    @dalli = Dalli::Client.new('localhost:11211')
-    @dalli.delete('foo')
-    @store = APICache::DalliStore.new(@dalli)
+    @moneta = Moneta::Memcache.new(server: 'localhost')
+    @moneta.delete('foo')
+    @store = APICache::MonetaStore.new(@moneta)
   end
 
   it 'should set and get' do
@@ -35,7 +36,5 @@ describe APICache::DalliStore do
       @store.delete('key')
       expect(@store.exists?('key')).to be false
     end
-
   end
-
 end

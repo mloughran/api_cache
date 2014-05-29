@@ -5,4 +5,5 @@ gemspec
 
 group :development, :test do
   gem 'byebug', '~> 3.1'
+  gem 'rubocop'
 end
