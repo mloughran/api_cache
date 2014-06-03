@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe APICache::Cache do
   before :each do
@@ -8,25 +8,25 @@ describe APICache::Cache do
     }
   end
 
-  it 'should set and get' do
-    cache = APICache::Cache.new('flubble', @options)
+  it "should set and get" do
+    cache = APICache::Cache.new("flubble", @options)
 
-    cache.set('Hello world')
-    expect(cache.get).to eq('Hello world')
+    cache.set("Hello world")
+    expect(cache.get).to eq("Hello world")
   end
 
-  it 'should md5 encode the provided key' do
-    cache = APICache::Cache.new('test_md5', @options)
+  it "should md5 encode the provided key" do
+    cache = APICache::Cache.new("test_md5", @options)
     expect(APICache.store).to receive(:set)
-    .with('9050bddcf415f2d0518804e551c1be98', 'md5ing?')
-    cache.set('md5ing?')
+    .with("9050bddcf415f2d0518804e551c1be98", "md5ing?")
+    cache.set("md5ing?")
   end
 
-  it 'should report correct invalid states' do
-    cache = APICache::Cache.new('foo', @options)
+  it "should report correct invalid states" do
+    cache = APICache::Cache.new("foo", @options)
 
     expect(cache.state).to eq(:missing)
-    cache.set('foo')
+    cache.set("foo")
     expect(cache.state).to eq(:current)
     sleep(1)
     expect(cache.state).to eq(:refetch)
@@ -34,8 +34,8 @@ describe APICache::Cache do
     expect(cache.state).to eq(:invalid)
   end
 
-  it 'should initially have invalid state' do
-    cache = APICache::Cache.new('foo', @options)
+  it "should initially have invalid state" do
+    cache = APICache::Cache.new("foo", @options)
     expect(cache.state).to eq(:invalid)
   end
 end

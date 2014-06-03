@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "api_cache"
-  s.version     = "0.2.3"
+  s.version     = "0.2.4"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Martyn Loughran"]
   s.email       = ["me@mloughran.com"]
@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rspec', "~> 3.0.0.rc1")
   s.add_development_dependency('webmock')
   s.add_development_dependency('rake')
-  s.add_development_dependency('moneta', "~> 0.6.0")
+  s.add_development_dependency('moneta', "~> 0.7")
   s.add_development_dependency('dalli')
   s.add_development_dependency('memcache-client')
 end
