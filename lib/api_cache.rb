@@ -145,3 +145,4 @@ APICache.autoload 'DalliStore', 'api_cache/dalli_store'
 APICache.autoload 'MemoryStore', 'api_cache/memory_store'
 APICache.autoload 'MonetaStore', 'api_cache/moneta_store'
 APICache.autoload 'NullStore', 'api_cache/null_store'
+APICache.autoload "RedisStore", "api_cache/redis_store"
