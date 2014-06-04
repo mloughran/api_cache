@@ -16,8 +16,7 @@ APICache allows any API client library to be easily wrapped with a robust cachin
     
     # Use a proper store
     require 'moneta'
-    require 'moneta/memcache'
-    APICache.store = Moneta::Memcache.new(:server => "localhost")
+    APICache.store = Moneta.new(:Memcached)
     
     # Wrap an API, and handle the failure case
     
