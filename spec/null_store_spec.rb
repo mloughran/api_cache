@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe APICache::NullStore do
   before :each do
@@ -6,14 +6,14 @@ describe APICache::NullStore do
   end
 
   it "should NOT set" do
-    @store.exists?('foo').should be_false
-    @store.set('foo', 'bar')
-    @store.exists?('foo').should be_false
+    expect(@store.exists?("foo")).to be false
+    @store.set("foo", "bar")
+    expect(@store.exists?("foo")).to be false
   end
 
   it "should allows say keys are expired" do
-    @store.expired?('foo', 1).should be_true
-    @store.set('foo', 'bar')
-    @store.expired?('foo', 1).should be_true
+    expect(@store.expired?("foo", 1)).to be true
+    @store.set("foo", "bar")
+    expect(@store.expired?("foo", 1)).to be true
   end
 end
