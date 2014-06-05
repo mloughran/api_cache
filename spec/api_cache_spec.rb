@@ -48,41 +48,41 @@ describe APICache do
         @api = instance_double(APICache::API, get: @api_data)
         @cache = instance_double(APICache::Cache, get: @cache_data, set: true)
 
-        expect(APICache::API).to receive(:new).and_return(@api)
-        expect(APICache::Cache).to receive(:new).and_return(@cache)
+        allow(APICache::API).to receive(:new) { @api }
+        allow(APICache::Cache).to receive(:new) { @cache }
       end
 
       it "should fetch data from the cache if the state is :current" do
-        expect(@cache).to receive(:state).and_return(:current)
+        allow(@cache).to receive(:state).and_return(:current)
 
         expect(APICache.get(@key)).to eq(@cache_data)
       end
 
       it "should make new request to API if the state is :refetch
       and store result in cache" do
-        expect(@cache).to receive(:state).and_return(:refetch)
+        allow(@cache).to receive(:state).and_return(:refetch)
         expect(APICache.get(@key)).to eq(@api_data)
       end
 
       it "should return the cached value if the state is :refetch
       but the api is not accessible" do
-        expect(@cache).to receive(:state).and_return(:refetch)
-        expect(@api).to receive(:get).with(no_args)
+        allow(@cache).to receive(:state).and_return(:refetch)
+        allow(@api).to receive(:get).with(no_args)
                                      .and_raise(APICache::CannotFetch)
 
         expect(APICache.get(@key)).to eq(@cache_data)
       end
 
       it "should make new request to API if the state is :invalid" do
-        expect(@cache).to receive(:state).and_return(:invalid)
+        allow(@cache).to receive(:state).and_return(:invalid)
 
         expect(APICache.get(@key)).to eq(@api_data)
       end
 
       it "should raise CannotFetch if the api cannot fetch data
       and the cache state is :invalid" do
-        expect(@cache).to receive(:state).and_return(:invalid)
-        expect(@api).to receive(:get).with(no_args)
+        allow(@cache).to receive(:state).and_return(:invalid)
+        allow(@api).to receive(:get).with(no_args)
                                      .and_raise(APICache::CannotFetch)
 
         expect(lambda do
@@ -91,15 +91,15 @@ describe APICache do
       end
 
       it "should make new request to API if the state is :missing" do
-        expect(@cache).to receive(:state).and_return(:missing)
+        allow(@cache).to receive(:state).and_return(:missing)
 
         expect(APICache.get(@key)).to eq(@api_data)
       end
 
       it "should raise an exception if the api cannot fetch data and
       the cache state is :missing" do
-        expect(@cache).to receive(:state).and_return(:missing)
-        expect(@api).to receive(:get).with(no_args)
+        allow(@cache).to receive(:state).and_return(:missing)
+        allow(@api).to receive(:get).with(no_args)
                                      .and_raise(APICache::CannotFetch)
 
         expect(lambda do
