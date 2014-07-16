@@ -24,9 +24,20 @@ class APICache
       raise "Method not implemented. Called abstract class."
     end
 
-    # Has a given time passed since the key was set?
-    def expired?(key, timeout)
+    # created_at returns the time when the key was last set
+    def created_at(key)
       raise "Method not implemented. Called abstract class."
+    end
+
+    # expired? returns true if the given timeout has passed since the key was
+    # set. It has nothing to say about the existence or otherwise of said key.
+    def expired?(key, timeout)
+      if (created_at = created_at(key))
+        Time.now - created_at > timeout
+      else
+        # If the created_at data is missing assume expired
+        true
+      end
     end
   end
 end

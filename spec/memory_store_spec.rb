@@ -1,18 +1,10 @@
 require 'spec_helper'
 
 describe APICache::MemoryStore do
-  before :each do
-    @store = APICache::MemoryStore.new
-  end
+  let(:cache) { {} }
+  let(:store) { APICache::MemoryStore.new(cache) }
 
-  it "should set" do
-    @store.exists?('foo').should be_false
-    @store.set('foo', 'bar')
-    @store.exists?('foo').should be_true
-	@store.get('foo').should == 'bar'
-  end
-
-  it "should return nil if not found" do
-    @store.get('nothing').should be_nil
-  end
+  # Deleting created_at makes no sense given the way MemoryStore stores data
+  @skip_created_at_deletion = true
+  include_examples "generic store"
 end
