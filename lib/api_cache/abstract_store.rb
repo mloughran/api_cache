@@ -14,7 +14,7 @@ class APICache
       raise "Method not implemented. Called abstract class."
     end
 
-    # Delete value.
+    # Delete the given key. The return value is not used.
     def delete(key)
       raise "Method not implemented. Called abstract class."
     end
