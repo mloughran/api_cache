@@ -13,7 +13,7 @@ class APICache
     end
 
     def get(key)
-      data = @cache[key][1]
+      data = exists?(key) ? @cache[key][1] : nil
       APICache.logger.debug("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
       data
     end
