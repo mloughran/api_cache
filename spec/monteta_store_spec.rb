@@ -1,11 +1,10 @@
 require 'spec_helper'
 
 require 'moneta'
-require 'moneta/memcache'
 
 describe APICache::MonetaStore do
   before :each do
-    @moneta = Moneta::Memcache.new(:server => "localhost")
+    @moneta = Moneta.new(:Memcached)
     @moneta.delete('foo')
     @store = APICache::MonetaStore.new(@moneta)
   end
