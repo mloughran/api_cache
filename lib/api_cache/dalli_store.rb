@@ -28,6 +28,7 @@ class APICache
 
     # Has a given time passed since the key was set?
     def expired?(key, timeout)
+      return true unless exists?("#{key}_created_at")
       Time.now - @dalli.get("#{key}_created_at") > timeout
     end
   end
