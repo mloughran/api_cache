@@ -99,12 +99,12 @@ Please be liberal with the github issue tracker, more so with pull requests, or 
 
 ## Contributing
 
-There is a Gemfile to make running the specs easy:
+Please open an issue to discuss any major changes, and add specs.
+
+Tests require running a local memcached server, and are started thus:
 
     bundle install
     bundle exec rake
-
-Code, write specs, send pull request, easy as pie. Thanks!
 
 ## Copyright
 
