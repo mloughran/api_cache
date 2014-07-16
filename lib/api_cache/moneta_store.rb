@@ -23,7 +23,9 @@ class APICache
 
     # Does a given key exist in the cache?
     def exists?(key)
-      @moneta.key?(key)
+      # double-check to ensure both keys are there
+      # really should not have outside influence but in this case we do
+      @moneta.key?(key) && @moneta.key?("#{key}_created_at")
     end
 
     # Has a given time passed since the key was set?
