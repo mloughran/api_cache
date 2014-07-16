@@ -4,20 +4,24 @@ class APICache
   class NullStore < APICache::AbstractStore
     def initialize
     end
-    
-    def exists?(key)
-      false
-    end
 
     def set(key, value)
       true
     end
 
+    def get(key)
+      nil
+    end
+
     def delete(key)
     end
 
-    def expired?(key, timeout)
-      true
+    def exists?(key)
+      false
+    end
+
+    def created_at(key)
+      nil
     end
   end
 end

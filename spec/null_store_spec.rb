@@ -11,7 +11,7 @@ describe APICache::NullStore do
     @store.exists?('foo').should be_false
   end
 
-  it "should allows say keys are expired" do
+  it "should always say keys are expired" do
     @store.expired?('foo', 1).should be_true
     @store.set('foo', 'bar')
     @store.expired?('foo', 1).should be_true
