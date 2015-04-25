@@ -22,5 +22,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency('moneta', "~> 0.7")
   s.add_development_dependency('dalli')
   s.add_development_dependency("redis")
+  s.add_development_dependency('pry-byebug')
   s.add_development_dependency('memcache-client')
 end

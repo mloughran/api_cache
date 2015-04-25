@@ -31,9 +31,24 @@ class APICache
       @redis.expire(key, seconds)
     end
 
-    # Has a given time passed since the key was set? 
+    # Has a given time passed since the key was set?
     def expired?(key, timeout)
       @redis.ttl(key) <= 0
+    end
+
+    # returns the number of keys in the store
+    def count
+      @redis.dbsize
+    end
+
+    # finds all keys matching the given pattern
+    def keys(pattern = "*")
+      @redis.keys(pattern)
+    end
+
+    # deletes all keys
+    def clear
+      @redis.flushall
     end
 
   end
