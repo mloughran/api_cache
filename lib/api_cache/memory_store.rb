@@ -1,8 +1,8 @@
 class APICache
   class MemoryStore < APICache::AbstractStore
-    def initialize
+    def initialize(cache = {})
       APICache.logger.debug "Using memory store"
-      @cache = {}
+      @cache = cache
       true
     end
 
@@ -13,7 +13,7 @@ class APICache
     end
 
     def get(key)
-      data = @cache[key][1]
+      data = exists?(key) ? @cache[key][1] : nil
       APICache.logger.debug("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
       data
     end
@@ -26,14 +26,8 @@ class APICache
       !@cache[key].nil?
     end
 
-    def expired?(key, timeout)
-      Time.now - created(key) > timeout
-    end
-
-    private
-
-    def created(key)
-      @cache[key][0]
+    def created_at(key)
+      @cache[key] && @cache[key][0]
     end
   end
 end

@@ -49,6 +49,7 @@ class APICache
 
     def delete
       store.delete(hash)
+      return nil
     end
 
     private

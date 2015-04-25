@@ -16,8 +16,7 @@ APICache allows any API client library to be easily wrapped with a robust cachin
     
     # Use a proper store
     require 'moneta'
-    require 'moneta/memcache'
-    APICache.store = Moneta::Memcache.new(:server => "localhost")
+    APICache.store = Moneta.new(:Memcached)
     
     # Wrap an API, and handle the failure case
     
@@ -94,19 +93,18 @@ You can send any of the following options to `APICache.get(url, options = {}, &b
 
 Before using the APICache you should set the cache to use. By default an in memory hash is used - obviously not a great idea. Thankfully APICache can use any moneta store, so for example if you wanted to use memcache you'd do this:
 
-    require 'moneta/memcache'
-    APICache.store = Moneta::Memcache.new(:server => "localhost")
+    APICache.store = Moneta.new(:Memcached)
 
 Please be liberal with the github issue tracker, more so with pull requests, or drop me a mail to me [at] mloughran [dot] com. I'd love to hear from you.
 
 ## Contributing
 
-There is a Gemfile to make running the specs easy:
+Please open an issue to discuss any major changes, and add specs.
+
+Tests require running a local memcached server, and are started thus:
 
     bundle install
     bundle exec rake
-
-Code, write specs, send pull request, easy as pie. Thanks!
 
 ## Copyright
 

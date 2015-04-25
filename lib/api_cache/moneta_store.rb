@@ -26,9 +26,8 @@ class APICache
       @moneta.key?(key)
     end
 
-    # Has a given time passed since the key was set?
-    def expired?(key, timeout)
-      Time.now - @moneta["#{key}_created_at"] > timeout
+    def created_at(key)
+      @moneta["#{key}_created_at"]
     end
   end
 end
