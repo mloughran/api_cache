@@ -96,7 +96,7 @@ You can send any of the following options to `APICache.get(url, options = {}, &b
   :fail =>          # Value returned instead of exception on failure
 }
 ```
-Before using the APICache you should set the cache to use. By default an in memory hash is used - obviously not a great idea. Thankfully APICache can use any moneta store, so for example if you wanted to use memcache you'd do this:
+Before using the APICache you should set the cache to use. By default an in memory hash is used - obviously not a great idea. Thankfully APICache can use any moneta store (you may need the Moneta gem if not already installed: https://github.com/minad/moneta), so for example if you wanted to use memcache you'd do this:
 ```ruby
 APICache.store = Moneta.new(:Memcached)
 ```
